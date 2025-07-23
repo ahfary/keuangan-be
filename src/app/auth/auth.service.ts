@@ -63,7 +63,7 @@ export class AuthService {
     try {
       payload.password = await hash(payload.password, 12);
       
-      const user = await this.prismaService.user.create({ // ✅ Menggunakan create
+      const user = await this.prismaService.user.create({
         data : payload,
       });
 
@@ -72,16 +72,15 @@ export class AuthService {
       return ({...user});
 
     } catch (error) {
-      // ✅ Penanganan error spesifik dari Prisma untuk unique constraint
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
         throw new ConflictException('Email sudah terdaftar.');
       }
-      throw error; // Lempar error lain jika bukan karena duplikasi
+      throw error;
     }
   }
 
   async loginAdmin(payload: LoginDto): Promise<any> {
-    const checkUserExists = await this.prismaService.user.findUnique({ // ✅ Menggunakan findUnique
+    const checkUserExists = await this.prismaService.user.findUnique({
       where: {
         email: payload.email,
       },
@@ -110,7 +109,7 @@ export class AuthService {
     const access_token = this.generateJWT(jwtPayload, '1d', process.env.ACCESS_TOKEN_SECRET!);
     const refresh_token = this.generateJWT(jwtPayload, '1d', process.env.REFRESH_TOKEN_SECRET!);
 
-    await this.prismaService.user.update({ // ✅ Menggunakan update
+    await this.prismaService.user.update({
       where: { id: checkUserExists.id },
       data: { refresh_token: refresh_token },
     });
@@ -122,11 +121,11 @@ export class AuthService {
   }
 
   async profile(): Promise<any> {
-    const user = await this.prismaService.user.findUnique({ // ✅ Menggunakan findUnique
+    const user = await this.prismaService.user.findUnique({
       where: {
         id: this.req.user.id,
       },
-      select: { // ✅ Menggunakan select untuk memilih field
+      select: {
         id: true,
         name: true,
         email: true,

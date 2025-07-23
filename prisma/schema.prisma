@@ -18,10 +18,35 @@ model User {
   id            Int      @id @default(autoincrement())
   email         String   @unique
   name          String
-  role          String  @default("admin") //admin dan kasir
+  role          String   @default("admin") //admin, kasir, santri
   password      String
-  access_token  String?
   refresh_token String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
+
+model Santri {
+  id        Int       @id @default(autoincrement())
+  name      String
+  kelas     String
+  saldo     Int       @default(0)
+  hutang    Int?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+  // user User? @relation(fields: [userId], references: [id])
+  // userId Int? @unique
+
+model Items {
+  id        Int       @id @default(autoincrement())
+  nama      String
+  harga     Int
+  jumlah    Int       @default(0)
+  gambar    String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+// model Perusahaan{
+  
+// }
