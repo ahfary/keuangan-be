@@ -22,7 +22,7 @@ model User {
   password      String
   refresh_token String?
   createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  updatedAt     DateTime? @updatedAt
 }
 
 model Santri {
@@ -41,12 +41,10 @@ model Items {
   id        Int       @id @default(autoincrement())
   nama      String
   harga     Int
+  kategori  String    @default("makanan")
   jumlah    Int       @default(0)
   gambar    String
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
 }
 
-// model Perusahaan{
-  
-// }
