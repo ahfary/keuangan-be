@@ -15,13 +15,13 @@ datasource db {
 }
 
 model User {
-  id            Int      @id @default(autoincrement())
-  email         String   @unique
+  id            Int       @id @default(autoincrement())
+  email         String    @unique
   name          String
-  role          String   @default("admin") //admin, kasir, santri
+  role          String    @default("admin") //admin, kasir, santri
   password      String
   refresh_token String?
-  createdAt     DateTime @default(now())
+  createdAt     DateTime  @default(now())
   updatedAt     DateTime? @updatedAt
 }
 
@@ -33,21 +33,71 @@ model Santri {
   hutang    Int?
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
+  cart      Cart[]
+  History   History[]
 }
-  // user User? @relation(fields: [userId], references: [id])
-  // userId Int? @unique
 
 model Items {
-  id        Int       @id @default(autoincrement())
-  nama      String
-  harga     Int
-  kategori  String    @default("makanan")
-  jumlah    Int       @default(0)
-  gambar    String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
+  id          Int           @id @default(autoincrement())
+  nama        String
+  harga       Int
+  kategori    String        @default("makanan")
+  jumlah      Int           @default(0)
+  gambar      String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime?     @updatedAt
+  cart        Cart[]
+  HistoryItem HistoryItem[]
+  CartItem    CartItem[]
 }
 
-// model cart {
-//   id        Int       @id @default(autoincrement()) 
-// }
+model Cart {
+  id        Int        @id @default(autoincrement())
+  quantity  Int        @default(1)
+  createdAt DateTime   @default(now())
+  itemId    Int        @unique
+  item      Items      @relation(fields: [itemId], references: [id])
+  santriId  Int        @unique
+  santri    Santri     @relation(fields: [santriId], references: [id])
+  CartItem  CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id       Int @id @default(autoincrement())
+  quantity Int @default(1)
+  cartId   Int // Terhubung ke wadah Cart
+  itemId   Int // Terhubung ke Item yang dipilih
+
+  cart Cart  @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, itemId]) // Pastikan tidak ada item duplikat dalam satu keranjang
+  @@map("cart_items")
+}
+
+model History {
+  id          Int      @id @default(autoincrement())
+  santriId    Int
+  totalAmount Int
+  createdAt   DateTime @default(now())
+
+  santri Santri        @relation(fields: [santriId], references: [id])
+  items  HistoryItem[]
+
+  @@map("history")
+}
+
+model HistoryItem {
+  id              Int @id @default(autoincrement())
+  historyId       Int
+  itemId          Int
+  quantity        Int
+  priceAtPurchase Int // Simpan harga saat transaksi, karena harga barang bisa berubah
+
+  history History @relation(fields: [historyId], references: [id], onDelete: Cascade)
+  item    Items   @relation(fields: [itemId], references: [id])
+
+  @@map("history_items")
+}
