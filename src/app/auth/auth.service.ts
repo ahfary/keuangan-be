@@ -5,11 +5,13 @@ import { REQUEST } from '@nestjs/core';
 import { LoginDto, RegisterDto } from './auth.dto';
 import { Prisma } from '@prisma/client';
 import { compare, hash } from 'bcrypt';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prismaService: PrismaService,
+    // @InjectRepository(User) private readonly authRepository: ,
     private jwtService: JwtService,
     @Inject(REQUEST) private req: any,
   ) {}

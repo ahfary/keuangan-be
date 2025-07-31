@@ -3,6 +3,7 @@ import { SantriService } from './santri.service';
 import { JwtGuard } from '../auth/jwt.guard';
 import { DeductSaldoDto } from './santri.dto';
 
+@UseGuards(JwtGuard)
 @Controller('santri')
 export class SantriController {
     constructor(private readonly santriService: SantriService) {}

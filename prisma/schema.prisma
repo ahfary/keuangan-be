@@ -41,7 +41,8 @@ model Items {
   id          Int           @id @default(autoincrement())
   nama        String
   harga       Int
-  kategori    String        @default("makanan")
+  kategori    Kategori?    @relation(fields: [kategoriId], references: [id])
+  kategoriId Int?
   jumlah      Int           @default(0)
   gambar      String
   createdAt   DateTime      @default(now())
@@ -49,6 +50,15 @@ model Items {
   cart        Cart[]
   HistoryItem HistoryItem[]
   CartItem    CartItem[]
+}
+
+model Kategori{
+  id        Int      @id @default(autoincrement())
+  nama      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt
+
+  items Items[]
 }
 
 model Cart {
