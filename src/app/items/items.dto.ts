@@ -17,4 +17,6 @@ export class createItemDto{
     // @IsInt()
     jumlah:number
 
+    @IsNotEmpty()
+    kategoriId?: number
 }

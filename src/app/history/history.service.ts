@@ -1,107 +1,95 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import BaseResponse from 'src/utils/response.utils';
-import { PrismaService } from '../prisma/prisma.service';
 import { CheckoutDto } from './history.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { History } from '../entity/history.entity';
+import { Cart } from '../entity/cart.entity';
+import { Santri } from '../entity/santri.entity';
+import { Items } from '../entity/items.entity';
+import { CartItem } from '../entity/cart_item.entity';
+import { HistoryItem } from '../entity/history_item.entity';
 
 @Injectable()
 export class HistoryService extends BaseResponse {
-  constructor(private prismaService: PrismaService) {
+  constructor(
+    @InjectRepository(History) private readonly historyRepository: Repository<History>,
+    @InjectRepository(Cart) private readonly cartRepository: Repository<Cart>,
+    @InjectRepository(CartItem) private readonly cartItemRepository: Repository<CartItem>,
+    @InjectRepository(Santri) private readonly santriRepository: Repository<Santri>,
+    @InjectRepository(Items) private readonly itemsRepository: Repository<Items>,
+    @InjectRepository(HistoryItem) private readonly historyItemRepository: Repository<HistoryItem>,
+  ) {
     super();
   }
 
-  getHistoryForSantri(santriId: number) {
-    return this.prismaService.history.findMany({
+  async getHistoryForSantri(santriId: number) {
+    return this.historyRepository.find({
       where: { santriId },
-      include: {
-        items: {
-          include: {
-            item: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
+      relations: ['items', 'items.item'],
+      order: { createdAt: 'DESC' },
     });
   }
 
   async checkout(dto: CheckoutDto) {
     const { santriId } = dto;
 
-    // 1. Ambil data cart dan santri
-    const cart = await this.prismaService.cart.findFirst({
+    const cart = await this.cartRepository.findOne({
       where: { santriId },
-      include: {
-        CartItem: {
-          include: {
-            item: true,
-          },
-        },
-      },
+      relations: ['cartItems', 'cartItems.item'],
     });
 
-    const santri = await this.prismaService.santri.findUnique({
-      where: { id: santriId },
-    });
+    const santri = await this.santriRepository.findOne({ where: { id: santriId } });
 
     if (!santri) throw new NotFoundException(`Santri dengan ID ${santriId} tidak ditemukan.`);
-    if (!cart || cart.CartItem.length === 0)
+    if (!cart || cart.cartItems.length === 0)
       throw new BadRequestException('Keranjang kosong, tidak bisa checkout.');
 
-    // 2. Kalkulasi total harga + validasi stok
     let totalAmount = 0;
-    for (const cartItem of cart.CartItem) {
+    for (const cartItem of cart.cartItems) {
       if (cartItem.item.jumlah < cartItem.quantity) {
-        throw new BadRequestException(
-          `Stok untuk item '${cartItem.item.nama}' tidak mencukupi.`,
-        );
+        throw new BadRequestException(`Stok untuk item '${cartItem.item.nama}' tidak mencukupi.`);
       }
       totalAmount += cartItem.item.harga * cartItem.quantity;
     }
 
-    // 3. Validasi saldo
     if (santri.saldo < totalAmount) {
       throw new BadRequestException(
         `Saldo santri (Rp ${santri.saldo}) tidak cukup untuk total belanja (Rp ${totalAmount}).`,
       );
     }
 
-    // 4. Transaksi atomik
-    return this.prismaService.$transaction(async (tx) => {
-      // a. Kurangi saldo santri
-      await tx.santri.update({
-        where: { id: santriId },
-        data: { saldo: { decrement: totalAmount } },
-      });
+    return await this.historyRepository.manager.transaction(async (manager) => {
+      // Kurangi saldo santri
+      await manager.update(Santri, santriId, { saldo: santri.saldo - totalAmount });
 
-      // b. Kurangi stok barang
-      for (const cartItem of cart.CartItem) {
-        await tx.items.update({
-          where: { id: cartItem.itemId },
-          data: { jumlah: { decrement: cartItem.quantity } },
+      // Kurangi stok barang
+      for (const cartItem of cart.cartItems) {
+        await manager.update(Items, cartItem.item.id, {
+          jumlah: cartItem.item.jumlah - cartItem.quantity,
         });
       }
 
-      // c. Buat record History
-      const newHistory = await tx.history.create({
-        data: {
-          santriId,
-          totalAmount,
-        },
+      // Buat record History
+      const newHistory = manager.create(History, {
+        santriId,
+        totalAmount,
       });
+      await manager.save(newHistory);
 
-      // d. Pindahkan semua item ke HistoryItem
-      await tx.historyItem.createMany({
-        data: cart.CartItem.map((ci) => ({
-          historyId: newHistory.id,
-          itemId: ci.itemId,
+      // Simpan HistoryItem
+      const historyItems = cart.cartItems.map((ci) =>
+        manager.create(HistoryItem, {
+          history: newHistory,
+          item: ci.item,
           quantity: ci.quantity,
           priceAtPurchase: ci.item.harga,
-        })),
-      });
+        }),
+      );
+      await manager.save(HistoryItem, historyItems);
 
-      // e. Kosongkan CartItem tanpa hapus Cart
-      await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
+      // Kosongkan CartItem
+      await manager.delete(CartItem, { cart: { id: cart.id } });
 
       return newHistory;
     });

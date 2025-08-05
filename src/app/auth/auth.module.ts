@@ -4,10 +4,12 @@ import { PrismaService } from '../prisma/prisma.service';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtAccessTokenStrategy } from './jwtAccessToken.strategy';
 import { JwtRefreshTokenStrategy } from './jwtRefreshToken.strategy';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from '../entity/user.entity';
 
 @Module({
-  imports: [JwtModule.register({})],
-  providers: [AuthService, PrismaService, JwtAccessTokenStrategy, JwtRefreshTokenStrategy],
+  imports: [TypeOrmModule.forFeature([User]),JwtModule.register({})],
+  providers: [AuthService, JwtAccessTokenStrategy, JwtRefreshTokenStrategy],
   controllers: [AuthController]
 })
 

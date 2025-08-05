@@ -4,18 +4,21 @@ import { PrismaService } from '../prisma/prisma.service';
 import { ResponseSuccess } from 'src/interface/response.interface';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { createItemDto } from './items.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Items } from '../entity/items.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ItemsService extends BaseResponse {
     constructor (
-        private prismaService : PrismaService,
+        @InjectRepository(Items)private readonly items:Repository<Items>,
         private cloudinaryService: CloudinaryService
     ){
         super();
     }
 
     async getAllItems():Promise<ResponseSuccess> {
-        const items = await this.prismaService.items.findMany();
+        const items = await this.items.find();
         if(items.length == 0) {
             throw new HttpException('Items not found', 404);
         }
@@ -23,8 +26,10 @@ export class ItemsService extends BaseResponse {
     }
 
     async getItemById(id: number):Promise<ResponseSuccess> {
-        const item = await this.prismaService.items.findUnique({
-            where: { id }
+        const item = await this.items.findOne({
+            where : {
+                id : id
+            }
         });
         if (!item) {
             throw new HttpException('Item not found', 404);
@@ -45,11 +50,10 @@ export class ItemsService extends BaseResponse {
             harga: Number(data.harga),
             jumlah: Number(data.jumlah),
             gambar: uploadedImage.secure_url,
+            kategoriId: data.kategoriId ? Number(data.kategoriId) : null,
         };
 
-        const newItem = await this.prismaService.items.create({
-            data: dataToSave,
-        });
+        const newItem = await this.items.save(dataToSave as any)
 
         return this.success('Item berhasil dibuat dengan gambar', newItem);
 
@@ -60,17 +64,14 @@ export class ItemsService extends BaseResponse {
 }
 
     async updateItem(id: number, data: any):Promise<ResponseSuccess> {
-        const updatedItem = await this.prismaService.items.update({
-            where: { id },
-            data
-        });
+        const updatedItem = await this.items.findOneBy({id:id})
+        await this.items.update(id, data);
         return this.success('Item updated successfully', updatedItem);
     }
 
     async deleteItem(id: number):Promise<ResponseSuccess> {
-        const deletedItem = await this.prismaService.items.delete({
-            where: { id }
-        });
+        const deletedItem = await this.items.findOneBy({id:id})
+        await this.items.delete(id);
         return this.success('Item deleted successfully', deletedItem);
     }
 }

@@ -10,26 +10,29 @@ import { CloudinaryModule } from './app/cloudinary/cloudinary.module';
 import { CartModule } from './app/cart/cart.module';
 import { HistoryModule } from './app/history/history.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { KategoriModule } from './app/kategori/kategori.module';
+import { TransaksiModule } from './app/transaksi/transaksi.module';
 
 @Global()
 @Module({
   imports: [
-    // ConfigModule.forRoot({
-    //   isGlobal: true, // konfigurasi is global untuk semua module
-    // }),
-    // TypeOrmModule.forRootAsync({
-    //   useFactory: async () => {
-    //     const { typeOrmConfig } = await import('./config/typeorm.config');
-    //     return typeOrmConfig;
-    //   },
-    // }),
-    PrismaModule,
+    ConfigModule.forRoot({
+      isGlobal: true, // konfigurasi is global untuk semua module
+    }),
+    TypeOrmModule.forRootAsync({
+      useFactory: async () => {
+        const { typeOrmConfig } = await import('./config/typeorm.config');
+        return typeOrmConfig;
+      },
+    }),
     AuthModule,
     SantriModule,
     ItemsModule,
     CloudinaryModule,
     CartModule,
     HistoryModule,
+    KategoriModule,
+    TransaksiModule,
   ],
   controllers: [AppController],
   providers: [AppService],

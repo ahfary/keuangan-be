@@ -1,113 +1,113 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// // This is your Prisma schema file,
+// // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-generator client {
-  provider = "prisma-client-js"
-}
+// generator client {
+//   provider = "prisma-client-js"
+// }
 
-datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
-}
+// datasource db {
+//   provider  = "postgresql"
+//   url       = env("DATABASE_URL")
+//   directUrl = env("DIRECT_URL")
+// }
 
-model User {
-  id            Int       @id @default(autoincrement())
-  email         String    @unique
-  name          String
-  role          String    @default("admin") //admin, kasir, santri
-  password      String
-  refresh_token String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime? @updatedAt
-}
+// model User {
+//   id            Int       @id @default(autoincrement())
+//   email         String    @unique
+//   name          String
+//   role          String    @default("admin") //admin, kasir, santri
+//   password      String
+//   refresh_token String?
+//   createdAt     DateTime  @default(now())
+//   updatedAt     DateTime? @updatedAt
+// }
 
-model Santri {
-  id        Int       @id @default(autoincrement())
-  name      String
-  kelas     String
-  saldo     Int       @default(0)
-  hutang    Int?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
-  cart      Cart[]
-  History   History[]
-}
+// model Santri {
+//   id        Int       @id @default(autoincrement())
+//   name      String
+//   kelas     String
+//   saldo     Int       @default(0)
+//   hutang    Int?
+//   createdAt DateTime  @default(now())
+//   updatedAt DateTime? @updatedAt
+//   cart      Cart[]
+//   History   History[]
+// }
 
-model Items {
-  id          Int           @id @default(autoincrement())
-  nama        String
-  harga       Int
-  kategori    Kategori?    @relation(fields: [kategoriId], references: [id])
-  kategoriId Int?
-  jumlah      Int           @default(0)
-  gambar      String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime?     @updatedAt
-  cart        Cart[]
-  HistoryItem HistoryItem[]
-  CartItem    CartItem[]
-}
+// model Items {
+//   id          Int           @id @default(autoincrement())
+//   nama        String
+//   harga       Int
+//   kategori    Kategori?    @relation(fields: [kategoriId], references: [id])
+//   kategoriId Int?
+//   jumlah      Int           @default(0)
+//   gambar      String
+//   createdAt   DateTime      @default(now())
+//   updatedAt   DateTime?     @updatedAt
+//   cart        Cart[]
+//   HistoryItem HistoryItem[]
+//   CartItem    CartItem[]
+// }
 
-model Kategori{
-  id        Int      @id @default(autoincrement())
-  nama      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime? @updatedAt
+// model Kategori{
+//   id        Int      @id @default(autoincrement())
+//   nama      String   @unique
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime? @updatedAt
 
-  items Items[]
-}
+//   items Items[]
+// }
 
-model Cart {
-  id        Int        @id @default(autoincrement())
-  quantity  Int        @default(1)
-  createdAt DateTime   @default(now())
-  itemId    Int        @unique
-  item      Items      @relation(fields: [itemId], references: [id])
-  santriId  Int        @unique
-  santri    Santri     @relation(fields: [santriId], references: [id])
-  CartItem  CartItem[]
+// model Cart {
+//   id        Int        @id @default(autoincrement())
+//   quantity  Int        @default(1)
+//   createdAt DateTime   @default(now())
+//   itemId    Int        @unique
+//   item      Items      @relation(fields: [itemId], references: [id])
+//   santriId  Int        @unique
+//   santri    Santri     @relation(fields: [santriId], references: [id])
+//   CartItem  CartItem[]
 
-  @@map("carts")
-}
+//   @@map("carts")
+// }
 
-model CartItem {
-  id       Int @id @default(autoincrement())
-  quantity Int @default(1)
-  cartId   Int // Terhubung ke wadah Cart
-  itemId   Int // Terhubung ke Item yang dipilih
+// model CartItem {
+//   id       Int @id @default(autoincrement())
+//   quantity Int @default(1)
+//   cartId   Int // Terhubung ke wadah Cart
+//   itemId   Int // Terhubung ke Item yang dipilih
 
-  cart Cart  @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
+//   cart Cart  @relation(fields: [cartId], references: [id], onDelete: Cascade)
+//   item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
 
-  @@unique([cartId, itemId]) // Pastikan tidak ada item duplikat dalam satu keranjang
-  @@map("cart_items")
-}
+//   @@unique([cartId, itemId]) // Pastikan tidak ada item duplikat dalam satu keranjang
+//   @@map("cart_items")
+// }
 
-model History {
-  id          Int      @id @default(autoincrement())
-  santriId    Int
-  totalAmount Int
-  createdAt   DateTime @default(now())
+// model History {
+//   id          Int      @id @default(autoincrement())
+//   santriId    Int
+//   totalAmount Int
+//   createdAt   DateTime @default(now())
 
-  santri Santri        @relation(fields: [santriId], references: [id])
-  items  HistoryItem[]
+//   santri Santri        @relation(fields: [santriId], references: [id])
+//   items  HistoryItem[]
 
-  @@map("history")
-}
+//   @@map("history")
+// }
 
-model HistoryItem {
-  id              Int @id @default(autoincrement())
-  historyId       Int
-  itemId          Int
-  quantity        Int
-  priceAtPurchase Int // Simpan harga saat transaksi, karena harga barang bisa berubah
+// model HistoryItem {
+//   id              Int @id @default(autoincrement())
+//   historyId       Int
+//   itemId          Int
+//   quantity        Int
+//   priceAtPurchase Int // Simpan harga saat transaksi, karena harga barang bisa berubah
 
-  history History @relation(fields: [historyId], references: [id], onDelete: Cascade)
-  item    Items   @relation(fields: [itemId], references: [id])
+//   history History @relation(fields: [historyId], references: [id], onDelete: Cascade)
+//   item    Items   @relation(fields: [itemId], references: [id])
 
-  @@map("history_items")
-}
+//   @@map("history_items")
+// }
