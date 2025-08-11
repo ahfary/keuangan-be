@@ -4,10 +4,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
   OneToOne,
+  JoinColumn,
 } from 'typeorm';
-import { Items } from './items.entity';
 import { Santri } from './santri.entity';
 
 @Entity()
@@ -21,9 +20,10 @@ export class Kartu {
   @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ nullable: true })
   updatedAt: Date;
 
-  @OneToOne(() => Santri, (santri) => santri.kartu)
+  @OneToOne(() => Santri, (santri) => santri.kartu, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'santriId' }) // FK ada di tabel kartu
   santri: Santri;
 }

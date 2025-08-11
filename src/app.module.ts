@@ -12,6 +12,8 @@ import { HistoryModule } from './app/history/history.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { KategoriModule } from './app/kategori/kategori.module';
 import { TransaksiModule } from './app/transaksi/transaksi.module';
+import { MidtransModule } from './app/midtrans/midtrans.module';
+import { KartuModule } from './app/kartu/kartu.module';
 
 @Global()
 @Module({
@@ -33,6 +35,8 @@ import { TransaksiModule } from './app/transaksi/transaksi.module';
     HistoryModule,
     KategoriModule,
     TransaksiModule,
+    MidtransModule,
+    KartuModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,6 +1,8 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
 import { KategoriService } from './kategori.service';
+import { JwtGuard } from '../auth/jwt.guard';
 
+// @UseGuards(JwtGuard)
 @Controller('kategori')
 export class KategoriController {
     constructor(private readonly kategoriService: KategoriService) {}

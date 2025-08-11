@@ -6,10 +6,8 @@ import {
   UpdateDateColumn,
   OneToOne,
   OneToMany,
-  JoinColumn,
 } from 'typeorm';
-// Import yang salah sebelumnya: import { HistoryItem } from './history_item.entity';
-import { History } from './history.entity'; // 1. Tambahkan import untuk History
+import { History } from './history.entity';
 import { Cart } from './cart.entity';
 import { Kartu } from './kartu_santri.entity';
 
@@ -27,7 +25,7 @@ export class Santri {
   @Column({ type: 'int', default: 0 })
   saldo: number;
 
-  @Column({ type: 'int', nullable: true })
+  @Column({ type: 'int', default: 0 })
   hutang: number;
 
   @CreateDateColumn()
@@ -43,6 +41,5 @@ export class Santri {
   history: History[];
 
   @OneToOne(() => Kartu, (kartu) => kartu.santri)
-  @JoinColumn() // Menandakan bahwa kolom foreign key ('kartuId') akan ada di tabel 'santri'
-  kartu: Kartu;
+  kartu: Kartu; // Bukan owner, jadi nggak ada @JoinColumn
 }

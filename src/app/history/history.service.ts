@@ -24,50 +24,65 @@ export class HistoryService extends BaseResponse {
   }
 
   async getHistoryForSantri(santriId: number) {
-    return this.historyRepository.find({
+    const history = await this.historyRepository.find({
       where: { santriId },
       relations: ['items', 'items.item'],
       order: { createdAt: 'DESC' },
     });
+    if(!history || history.length === 0) throw new NotFoundException('History tidak ditemukan.');
+    return this.success('History berhasil ditemukan.', history);
   }
 
   async checkout(dto: CheckoutDto) {
     const { santriId } = dto;
 
+    // Langkah 1: Ambil data cart beserta semua relasi yang dibutuhkan dalam SATU query
     const cart = await this.cartRepository.findOne({
       where: { santriId },
-      relations: ['cartItems', 'cartItems.item'],
+      // PERBAIKAN: Gunakan 'cartItems.item' (singular) agar cocok dengan 'cartItem.item'
+      relations: ['cartItems', 'cartItems.item', 'santri'],
     });
 
-    const santri = await this.santriRepository.findOne({ where: { id: santriId } });
+    // Langkah 2: Pengecekan awal yang lebih robust (Guard Clause)
+    if (!cart || !cart.cartItems || cart.cartItems.length === 0) {
+      throw new BadRequestException('Keranjang tidak ditemukan atau kosong.');
+    }
+    
+    // Data santri diambil dari relasi, tidak perlu query lagi. Ini lebih efisien.
+    const santri = cart.santri;
+    if (!santri) {
+      // Pengecekan ini untuk keamanan, seandainya relasi tidak ter-setup dengan baik
+      throw new NotFoundException(`Data santri untuk keranjang ini tidak ditemukan.`);
+    }
 
-    if (!santri) throw new NotFoundException(`Santri dengan ID ${santriId} tidak ditemukan.`);
-    if (!cart || cart.cartItems.length === 0)
-      throw new BadRequestException('Keranjang kosong, tidak bisa checkout.');
-
+    // Langkah 3: Kalkulasi total dan validasi stok (logika Anda sudah benar)
     let totalAmount = 0;
     for (const cartItem of cart.cartItems) {
+      if (!cartItem.item) {
+        // Pengecekan tambahan jika karena suatu hal item di keranjang tidak ada lagi di database
+        throw new NotFoundException(`Item dengan ID ${cartItem.itemId} di keranjang tidak ditemukan.`);
+      }
       if (cartItem.item.jumlah < cartItem.quantity) {
         throw new BadRequestException(`Stok untuk item '${cartItem.item.nama}' tidak mencukupi.`);
       }
       totalAmount += cartItem.item.harga * cartItem.quantity;
     }
 
+    // Validasi saldo
     if (santri.saldo < totalAmount) {
       throw new BadRequestException(
         `Saldo santri (Rp ${santri.saldo}) tidak cukup untuk total belanja (Rp ${totalAmount}).`,
       );
     }
-
+    
+    // Langkah 4: Jalankan semua operasi database dalam satu transaksi
     return await this.historyRepository.manager.transaction(async (manager) => {
       // Kurangi saldo santri
-      await manager.update(Santri, santriId, { saldo: santri.saldo - totalAmount });
+      await manager.decrement(Santri, { id: santriId }, 'saldo', totalAmount);
 
       // Kurangi stok barang
       for (const cartItem of cart.cartItems) {
-        await manager.update(Items, cartItem.item.id, {
-          jumlah: cartItem.item.jumlah - cartItem.quantity,
-        });
+        await manager.decrement(Items, { id: cartItem.item.id }, 'jumlah', cartItem.quantity);
       }
 
       // Buat record History
@@ -81,17 +96,18 @@ export class HistoryService extends BaseResponse {
       const historyItems = cart.cartItems.map((ci) =>
         manager.create(HistoryItem, {
           history: newHistory,
-          item: ci.item,
+          itemId: ci.item.id,
+          itemName: ci.item.nama, // Simpan juga nama dan harga saat itu
           quantity: ci.quantity,
           priceAtPurchase: ci.item.harga,
         }),
       );
-      await manager.save(HistoryItem, historyItems);
+      await manager.save(historyItems);
 
-      // Kosongkan CartItem
+      // Kosongkan CartItem yang terasosiasi dengan cart ini
       await manager.delete(CartItem, { cart: { id: cart.id } });
 
-      return newHistory;
+      return this.success('Checkout berhasil', newHistory);
     });
   }
 }

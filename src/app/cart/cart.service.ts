@@ -67,24 +67,29 @@ export class CartService extends BaseResponse {
         itemId,
         quantity,
       });
-      return this.cartItem.save(newCartItem);
+      await this.cartItem.save(newCartItem);
+      return this.success('Item berhasil ditambahkan ke keranjang.', newCartItem);
     }
   }
 
   async getCart(santriId: number) {
+    // const cart = await this.cart.findOne({
+    //   where: { santriId },
+    //   relations: {
+    //     cartItems: {
+    //       item: true
+    //     }
+    //   }
+    // });
     const cart = await this.cart.findOne({
       where: { santriId },
-      relations: {
-        cartItems: {
-          item: true
-        }
-      }
+      relations: ['items', 'santri'],
     });
 
     if (!cart) {
       throw new NotFoundException(`Keranjang untuk Santri ID ${santriId} tidak ditemukan.`);
     }
-    return cart;
+    return this.success('Keranjang berhasil ditemukan.', cart);
   }
   
   async removeItemFromCart(cartItemId: number):Promise<ResponseSuccess> {

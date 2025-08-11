@@ -23,9 +23,9 @@ export class Cart {
   santri: Santri;
 
   @OneToMany(() => CartItem, (cartItem) => cartItem.cart)
-  items: CartItem[];
+  cartItems: CartItem[];
 
   @CreateDateColumn()
   createdAt: Date;
-  cartItems: any;
+  cartsItems: any;
 }

@@ -1,3 +1,6 @@
+#Custom
+/src/app/midtrans
+
 # compiled output
 /dist
 /node_modules
