@@ -1,4 +1,9 @@
-import { HttpException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import BaseResponse from 'src/utils/response.utils';
 import { PrismaService } from '../prisma/prisma.service';
 import { ResponseSuccess } from 'src/interface/response.interface';
@@ -31,7 +36,9 @@ export class CartService extends BaseResponse {
     }
     const santri = await this.santri.findOne({ where: { id: santriId } });
     if (!santri) {
-      throw new NotFoundException(`Santri dengan ID ${santriId} tidak ditemukan.`);
+      throw new NotFoundException(
+        `Santri dengan ID ${santriId} tidak ditemukan.`,
+      );
     }
 
     // 2. Cari keranjang (wadah) milik santri, atau buat jika belum ada.
@@ -56,10 +63,9 @@ export class CartService extends BaseResponse {
 
     if (existingCartItems && existingCartItems.length > 0) {
       // Jika sudah ada, update quantity-nya.
-      return this.cartItem.update(
-        existingCartItems[0].id,
-        { quantity: existingCartItems[0].quantity + quantity }
-      );
+      return this.cartItem.update(existingCartItems[0].id, {
+        quantity: existingCartItems[0].quantity + quantity,
+      });
     } else {
       // Jika belum ada, buat record CartItem baru.
       const newCartItem = this.cartItem.create({
@@ -68,7 +74,10 @@ export class CartService extends BaseResponse {
         quantity,
       });
       await this.cartItem.save(newCartItem);
-      return this.success('Item berhasil ditambahkan ke keranjang.', newCartItem);
+      return this.success(
+        'Item berhasil ditambahkan ke keranjang.',
+        newCartItem,
+      );
     }
   }
 
@@ -87,19 +96,24 @@ export class CartService extends BaseResponse {
     });
 
     if (!cart) {
-      throw new NotFoundException(`Keranjang untuk Santri ID ${santriId} tidak ditemukan.`);
+      throw new NotFoundException(
+        `Keranjang untuk Santri ID ${santriId} tidak ditemukan.`,
+      );
     }
     return this.success('Keranjang berhasil ditemukan.', cart);
   }
-  
-  async removeItemFromCart(cartItemId: number):Promise<ResponseSuccess> {
+
+  async removeItemFromCart(cartItemId: number): Promise<ResponseSuccess> {
     // const deleted = await this.prismaService.cartItem.delete({
     //   where: { id: cartItemId },
     // })
-    const deleted = await this.cartItem.findOneBy({id:cartItemId})
+    const deleted = await this.cartItem.findOneBy({ id: cartItemId });
     await this.cartItem.delete(cartItemId);
-    if(deleted == null) throw new HttpException('Item di keranjang dengan ID tersebut tidak ditemukan.', 404);
+    if (deleted == null)
+      throw new HttpException(
+        'Item di keranjang dengan ID tersebut tidak ditemukan.',
+        404,
+      );
     return this.success('Item di keranjang berhasil dihapus.', deleted);
-    
   }
 }

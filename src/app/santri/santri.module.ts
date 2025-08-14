@@ -7,8 +7,8 @@ import { Santri } from '../entity/santri.entity';
 import { Kartu } from '../entity/kartu_santri.entity';
 
 @Module({
-  imports : [TypeOrmModule.forFeature([Santri, Kartu])],
+  imports: [TypeOrmModule.forFeature([Santri, Kartu])],
   providers: [SantriService],
-  controllers: [SantriController]
+  controllers: [SantriController],
 })
 export class SantriModule {}

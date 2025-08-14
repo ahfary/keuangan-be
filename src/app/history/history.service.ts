@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import BaseResponse from 'src/utils/response.utils';
 import { CheckoutDto } from './history.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,12 +17,17 @@ import { HistoryItem } from '../entity/history_item.entity';
 @Injectable()
 export class HistoryService extends BaseResponse {
   constructor(
-    @InjectRepository(History) private readonly historyRepository: Repository<History>,
+    @InjectRepository(History)
+    private readonly historyRepository: Repository<History>,
     @InjectRepository(Cart) private readonly cartRepository: Repository<Cart>,
-    @InjectRepository(CartItem) private readonly cartItemRepository: Repository<CartItem>,
-    @InjectRepository(Santri) private readonly santriRepository: Repository<Santri>,
-    @InjectRepository(Items) private readonly itemsRepository: Repository<Items>,
-    @InjectRepository(HistoryItem) private readonly historyItemRepository: Repository<HistoryItem>,
+    @InjectRepository(CartItem)
+    private readonly cartItemRepository: Repository<CartItem>,
+    @InjectRepository(Santri)
+    private readonly santriRepository: Repository<Santri>,
+    @InjectRepository(Items)
+    private readonly itemsRepository: Repository<Items>,
+    @InjectRepository(HistoryItem)
+    private readonly historyItemRepository: Repository<HistoryItem>,
   ) {
     super();
   }
@@ -29,7 +38,8 @@ export class HistoryService extends BaseResponse {
       relations: ['items', 'items.item'],
       order: { createdAt: 'DESC' },
     });
-    if(!history || history.length === 0) throw new NotFoundException('History tidak ditemukan.');
+    if (!history || history.length === 0)
+      throw new NotFoundException('History tidak ditemukan.');
     return this.success('History berhasil ditemukan.', history);
   }
 
@@ -47,12 +57,14 @@ export class HistoryService extends BaseResponse {
     if (!cart || !cart.cartItems || cart.cartItems.length === 0) {
       throw new BadRequestException('Keranjang tidak ditemukan atau kosong.');
     }
-    
+
     // Data santri diambil dari relasi, tidak perlu query lagi. Ini lebih efisien.
     const santri = cart.santri;
     if (!santri) {
       // Pengecekan ini untuk keamanan, seandainya relasi tidak ter-setup dengan baik
-      throw new NotFoundException(`Data santri untuk keranjang ini tidak ditemukan.`);
+      throw new NotFoundException(
+        `Data santri untuk keranjang ini tidak ditemukan.`,
+      );
     }
 
     // Langkah 3: Kalkulasi total dan validasi stok (logika Anda sudah benar)
@@ -60,10 +72,14 @@ export class HistoryService extends BaseResponse {
     for (const cartItem of cart.cartItems) {
       if (!cartItem.item) {
         // Pengecekan tambahan jika karena suatu hal item di keranjang tidak ada lagi di database
-        throw new NotFoundException(`Item dengan ID ${cartItem.itemId} di keranjang tidak ditemukan.`);
+        throw new NotFoundException(
+          `Item dengan ID ${cartItem.itemId} di keranjang tidak ditemukan.`,
+        );
       }
       if (cartItem.item.jumlah < cartItem.quantity) {
-        throw new BadRequestException(`Stok untuk item '${cartItem.item.nama}' tidak mencukupi.`);
+        throw new BadRequestException(
+          `Stok untuk item '${cartItem.item.nama}' tidak mencukupi.`,
+        );
       }
       totalAmount += cartItem.item.harga * cartItem.quantity;
     }
@@ -74,7 +90,7 @@ export class HistoryService extends BaseResponse {
         `Saldo santri (Rp ${santri.saldo}) tidak cukup untuk total belanja (Rp ${totalAmount}).`,
       );
     }
-    
+
     // Langkah 4: Jalankan semua operasi database dalam satu transaksi
     return await this.historyRepository.manager.transaction(async (manager) => {
       // Kurangi saldo santri
@@ -82,7 +98,12 @@ export class HistoryService extends BaseResponse {
 
       // Kurangi stok barang
       for (const cartItem of cart.cartItems) {
-        await manager.decrement(Items, { id: cartItem.item.id }, 'jumlah', cartItem.quantity);
+        await manager.decrement(
+          Items,
+          { id: cartItem.item.id },
+          'jumlah',
+          cartItem.quantity,
+        );
       }
 
       // Buat record History

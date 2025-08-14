@@ -7,6 +7,6 @@ import { Kartu } from '../entity/kartu_santri.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Kartu])],
   controllers: [KartuController],
-  providers: [KartuService]
+  providers: [KartuService],
 })
 export class KartuModule {}

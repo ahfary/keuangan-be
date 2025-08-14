@@ -8,6 +8,6 @@ import { Kartu } from '../entity/kartu_santri.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Santri, Kartu])],
   controllers: [TransaksiController],
-  providers: [TransaksiService]
+  providers: [TransaksiService],
 })
 export class TransaksiModule {}

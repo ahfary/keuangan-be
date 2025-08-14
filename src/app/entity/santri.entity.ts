@@ -11,9 +11,9 @@ import { History } from './history.entity';
 import { Cart } from './cart.entity';
 import { Kartu } from './kartu_santri.entity';
 
-enum Jurusan{ 
-  TKJ = 'TKJ',
-  RPL = 'RPL'
+enum Jurusan {
+  TKJ = 'Teknik Komputer dan Jaringan',
+  RPL = 'Rekayasa Perangkat Lunak',
 }
 
 @Entity()
@@ -33,8 +33,8 @@ export class Santri {
   @Column({ type: 'int', default: 0 })
   hutang: number;
 
-  // @Column({ type: 'enum', enum: Jurusan, default: Jurusan.RPL })
-  // jurusan: Jurusan;
+  @Column({ type: 'enum', enum: Jurusan, default: Jurusan.RPL })
+  jurusan: Jurusan;
 
   @CreateDateColumn()
   createdAt: Date;

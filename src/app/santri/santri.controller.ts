@@ -49,13 +49,15 @@ export class SantriController {
 
   @Put('update-santri-kartu/:id')
   async updateSantriAndKartu(
-  @Param('id') id: number,
-  @Body() body: { santriData: Partial<Santri>; kartuData?: Partial<Kartu> }
-) {
-  return this.santriService.updateSantriAndKartu(id, body.santriData, body.kartuData);
-}
-
-  
+    @Param('id') id: number,
+    @Body() body: { santriData: Partial<Santri>; kartuData?: Partial<Kartu> },
+  ) {
+    return this.santriService.updateSantriAndKartu(
+      id,
+      body.santriData,
+      body.kartuData,
+    );
+  }
 
   @Delete('delete/:id')
   async deleteSantri(@Param('id', ParseIntPipe) id: number) {

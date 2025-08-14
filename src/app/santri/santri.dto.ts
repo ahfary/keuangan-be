@@ -6,7 +6,6 @@ export class DeductSaldoDto {
   jumlah: number;
 }
 
-
 export class CreateSantriDto {
   @IsNotEmpty()
   @IsString()
@@ -14,5 +13,5 @@ export class CreateSantriDto {
 
   @IsNotEmpty()
   @IsString()
-  kelas:string
+  kelas: string;
 }

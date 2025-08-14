@@ -23,5 +23,5 @@ export class Kategori {
   updatedAt: Date;
 
   @OneToMany(() => Items, (item) => item.kategori)
-  items: Items[]; 
+  items: Items[];
 }

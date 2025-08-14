@@ -13,38 +13,37 @@ export class KartuService extends BaseResponse {
     super();
   }
 
-  
   // async getKartuBySantriId(santriId: number): Promise<ResponseSuccess> {
-    //   const kartu = await this.kartu
-    //   .createQueryBuilder('kartu')
-    //   .leftJoinAndSelect('kartu.santri', 'santri')
-    //   .where('santri.id = :santriId', { santriId })
-    //   .orderBy('kartu.createdAt', 'DESC')
-    //   .getMany();
-    
-    //   return this.success('Berhasil mendapatkan kartu santri', kartu);
-    // }
-    async getKartu(nomor: string) {
-      if (nomor) {
-        const nokartu = await this.kartu.findOne({
-          where: { nomorKartu: nomor },
-          relations: ['santri'],
-        });
-        if (!nokartu) {
-          throw new HttpException('Kartu tidak ditemukan', 404);
-        }
-        return this.success('Berhasil mendapatkan kartu santri', nokartu);
-      } else {
-        const kartu = await this.kartu.find({
-          relations: ['santri'],
-        });
-        return this.success('Berhasil mendapatkan semua kartu santri', kartu);
-      }
-    }
+  //   const kartu = await this.kartu
+  //   .createQueryBuilder('kartu')
+  //   .leftJoinAndSelect('kartu.santri', 'santri')
+  //   .where('santri.id = :santriId', { santriId })
+  //   .orderBy('kartu.createdAt', 'DESC')
+  //   .getMany();
 
-  async geKartuByNoKartu(nomor:string):Promise<ResponseSuccess>{
+  //   return this.success('Berhasil mendapatkan kartu santri', kartu);
+  // }
+  async getKartu(nomor: string) {
+    if (nomor) {
+      const nokartu = await this.kartu.findOne({
+        where: { nomorKartu: nomor },
+        relations: ['santri'],
+      });
+      if (!nokartu) {
+        throw new HttpException('Kartu tidak ditemukan', 404);
+      }
+      return this.success('Berhasil mendapatkan kartu santri', nokartu);
+    } else {
+      const kartu = await this.kartu.find({
+        relations: ['santri'],
+      });
+      return this.success('Berhasil mendapatkan semua kartu santri', kartu);
+    }
+  }
+
+  async geKartuByNoKartu(nomor: string): Promise<ResponseSuccess> {
     const kartu = await this.kartu.findOne({
-      where:{nomorKartu : nomor}
+      where: { nomorKartu: nomor },
     });
     return this.success('Berhasil mendapatkan semua kartu santri', kartu);
   }

@@ -14,7 +14,7 @@ export class SantriService extends BaseResponse {
     // private prismaService: PrismaService,
     @InjectRepository(Santri) private readonly santri: Repository<Santri>,
     @InjectRepository(Kartu) private readonly kartu: Repository<Kartu>,
-    private readonly dataSource : DataSource
+    private readonly dataSource: DataSource,
   ) {
     super();
   }
@@ -82,7 +82,7 @@ export class SantriService extends BaseResponse {
   async updateSantriAndKartu(
     santriId: number,
     santriData: Partial<Santri>,
-    kartuData?: Partial<Kartu>
+    kartuData?: Partial<Kartu>,
   ): Promise<ResponseSuccess> {
     return this.dataSource.transaction(async (manager) => {
       // Ambil santri + relasi kartu
@@ -92,7 +92,9 @@ export class SantriService extends BaseResponse {
       });
 
       if (!santriEntity) {
-        throw new NotFoundException(`Santri dengan ID ${santriId} tidak ditemukan`);
+        throw new NotFoundException(
+          `Santri dengan ID ${santriId} tidak ditemukan`,
+        );
       }
 
       // Update data santri

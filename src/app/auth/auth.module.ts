@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+import { AuthController } from './auth.controller';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtAccessTokenStrategy } from './jwtAccessToken.strategy';
@@ -8,10 +9,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../entity/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]),JwtModule.register({})],
+  imports: [TypeOrmModule.forFeature([User]), JwtModule.register({})],
   providers: [AuthService, JwtAccessTokenStrategy, JwtRefreshTokenStrategy],
-  controllers: [AuthController]
+  controllers: [AuthController],
 })
-
-
 export class AuthModule {}
