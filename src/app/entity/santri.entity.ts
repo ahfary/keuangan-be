@@ -12,8 +12,8 @@ import { Cart } from './cart.entity';
 import { Kartu } from './kartu_santri.entity';
 
 enum Jurusan {
-  TKJ = 'Teknik Komputer dan Jaringan',
-  RPL = 'Rekayasa Perangkat Lunak',
+  TKJ = 'TKJ',
+  RPL = 'RPL',
 }
 
 @Entity()
