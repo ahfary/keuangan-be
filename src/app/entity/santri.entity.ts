@@ -11,6 +11,11 @@ import { History } from './history.entity';
 import { Cart } from './cart.entity';
 import { Kartu } from './kartu_santri.entity';
 
+enum Jurusan{ 
+  TKJ = 'TKJ',
+  RPL = 'RPL'
+}
+
 @Entity()
 export class Santri {
   @PrimaryGeneratedColumn()
@@ -27,6 +32,9 @@ export class Santri {
 
   @Column({ type: 'int', default: 0 })
   hutang: number;
+
+  // @Column({ type: 'enum', enum: Jurusan, default: Jurusan.RPL })
+  // jurusan: Jurusan;
 
   @CreateDateColumn()
   createdAt: Date;

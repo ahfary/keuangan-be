@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import BaseResponse from 'src/utils/response.utils';
 import { Kartu } from '../entity/kartu_santri.entity';
@@ -24,18 +24,19 @@ export class KartuService extends BaseResponse {
     
     //   return this.success('Berhasil mendapatkan kartu santri', kartu);
     // }
-    async getKartu(nomor:string): Promise<ResponseSuccess> {
-      // const kartu = await this.kartu.find();
-      // return this.success('Berhasil mendapatkan semua kartu santri', kartu);
-      if(nomor){
-        const kartu = await this.kartu.findOne({
-          where:{nomorKartu : nomor},
-          relations : ['santri']
+    async getKartu(nomor: string) {
+      if (nomor) {
+        const nokartu = await this.kartu.findOne({
+          where: { nomorKartu: nomor },
+          relations: ['santri'],
         });
-        return this.success('Berhasil mendapatkan semua kartu santri', kartu);
-      }else {
+        if (!nokartu) {
+          throw new HttpException('Kartu tidak ditemukan', 404);
+        }
+        return this.success('Berhasil mendapatkan kartu santri', nokartu);
+      } else {
         const kartu = await this.kartu.find({
-          relations : ['santri']
+          relations: ['santri'],
         });
         return this.success('Berhasil mendapatkan semua kartu santri', kartu);
       }
