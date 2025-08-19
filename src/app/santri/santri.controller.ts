@@ -63,4 +63,10 @@ export class SantriController {
   async deleteSantri(@Param('id', ParseIntPipe) id: number) {
     return this.santriService.deleteSantri(id);
   }
+
+  @Delete('delete-bulk')
+  async deleteBulk(@Query('id') ids: string) {
+    const parsedIds = ids.split(',').map(Number);
+    return this.santriService.deleteBulk(parsedIds);
+  }
 }

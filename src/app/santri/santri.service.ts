@@ -134,4 +134,26 @@ export class SantriService extends BaseResponse {
     await this.santri.delete(id);
     return this.success('Santri deleted successfully', santri);
   }
+
+  // async deleteBulk(array: number[]): Promise<ResponseSuccess> {
+  //   if (!array.length) {
+  //     throw new HttpException('array must be provided in query', 400);
+  //   }
+
+  //   const existingSantri = await this.santri.findBy({ id: In(array) });
+  //   if (existingSantri.length !== array.length) {
+  //     throw new HttpException('Some Santri not found', 404);
+  //   }
+
+  //   await this.santri.delete(array);
+  //   return this.success('Bulk delete successfully', array);
+  // }
+  async deleteBulk(array: number[]): Promise<ResponseSuccess> {
+    const deleted = await this.santri.delete(array);
+
+    if(deleted.affected == 0) {
+      throw new HttpException('Santri Tidak Ditemukan', 404);
+    }
+    return this.success('Bulk delete successfully', deleted);
+  }
 }
