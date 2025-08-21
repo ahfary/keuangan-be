@@ -11,16 +11,7 @@ import { Items } from '../entity/items.entity';
 import { HistoryItem } from '../entity/history_item.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      History,
-      Cart,
-      CartItem,
-      Santri,
-      Items,
-      HistoryItem,
-    ]),
-  ],
+  imports: [TypeOrmModule.forFeature([History, Cart])],
   controllers: [HistoryController],
   providers: [HistoryService],
 })

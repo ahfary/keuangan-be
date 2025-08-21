@@ -30,6 +30,11 @@ export class ItemsService extends BaseResponse {
     return this.success('Items retrieved successfully', items);
   }
 
+  async countItems():Promise<ResponseSuccess>{
+    const countItem = await this.items.count();
+    return this.success('Success', countItem);
+  }
+
   async getItemById(id: number): Promise<ResponseSuccess> {
     const item = await this.items.findOne({
       where: {

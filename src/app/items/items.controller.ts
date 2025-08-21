@@ -23,6 +23,11 @@ export class ItemsController {
     return this.itemsService.getAllItems();
   }
 
+  @Get('count')
+  async countItems(){
+    return this.itemsService.countItems();  
+  }
+
   @Get(':id')
   async getItemById(@Param('id', ParseIntPipe) id: number) {
     return this.itemsService.getItemById(id);

@@ -7,12 +7,13 @@ import BaseResponse from 'src/utils/response.utils';
 import { CheckoutDto } from './history.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { History } from '../entity/history.entity';
+import { History, status } from '../entity/history.entity';
 import { Cart } from '../entity/cart.entity';
 import { Santri } from '../entity/santri.entity';
 import { Items } from '../entity/items.entity';
 import { CartItem } from '../entity/cart_item.entity';
 import { HistoryItem } from '../entity/history_item.entity';
+import { ResponseSuccess } from 'src/interface/response.interface';
 
 @Injectable()
 export class HistoryService extends BaseResponse {
@@ -20,14 +21,6 @@ export class HistoryService extends BaseResponse {
     @InjectRepository(History)
     private readonly historyRepository: Repository<History>,
     @InjectRepository(Cart) private readonly cartRepository: Repository<Cart>,
-    @InjectRepository(CartItem)
-    private readonly cartItemRepository: Repository<CartItem>,
-    @InjectRepository(Santri)
-    private readonly santriRepository: Repository<Santri>,
-    @InjectRepository(Items)
-    private readonly itemsRepository: Repository<Items>,
-    @InjectRepository(HistoryItem)
-    private readonly historyItemRepository: Repository<HistoryItem>,
   ) {
     super();
   }
@@ -41,6 +34,65 @@ export class HistoryService extends BaseResponse {
     if (!history || history.length === 0)
       throw new NotFoundException('History tidak ditemukan.');
     return this.success('History berhasil ditemukan.', history);
+  }
+
+  async getHistory(status?: status, kelas?: string): Promise<ResponseSuccess> {
+    const whereCondition: any = {};
+
+    // filter status kalau dikasih
+    if (status) {
+      whereCondition.status = status;
+    }
+
+    // filter kelas (nested ke Santri)
+    if (kelas) {
+      whereCondition.santri = { kelas };
+    }
+
+    const histories = await this.historyRepository.find({
+      where: whereCondition,
+      relations: ['santri', 'items', 'items.item'],
+      order: { createdAt: 'DESC' },
+    });
+
+    if (!histories || histories.length === 0) {
+      throw new NotFoundException(
+        status && kelas
+          ? `History dengan status ${status} dan kelas ${kelas} tidak ditemukan.`
+          : status
+            ? `History dengan status ${status} tidak ditemukan.`
+            : kelas
+              ? `History untuk kelas ${kelas} tidak ditemukan.`
+              : 'History tidak ditemukan.',
+      );
+    }
+
+    return this.success('History berhasil ditemukan.', histories);
+  }
+
+  async countHistory(status?: status): Promise<ResponseSuccess> {
+    let count: number;
+
+    if (status) {
+      count = await this.historyRepository.count({ where: { status } });
+    } else {
+      count = await this.historyRepository.count();
+    }
+
+    if (count === 0) {
+      throw new NotFoundException(
+        status
+          ? `Tidak ada history dengan status ${status}.`
+          : 'History tidak ditemukan.',
+      );
+    }
+
+    return this.success(
+      status
+        ? `Jumlah history dengan status ${status} berhasil dihitung.`
+        : 'Jumlah semua history berhasil dihitung.',
+      count,
+    );
   }
 
   async checkout(dto: CheckoutDto) {

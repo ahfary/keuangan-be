@@ -10,6 +10,11 @@ import {
 import { Santri } from './santri.entity'; // Pastikan path import benar
 import { HistoryItem } from './history_item.entity';
 
+export enum status{
+  LUNAS = 'Lunas',
+  HUTANG = 'Hutang',
+}
+
 @Entity()
 export class History {
   @PrimaryGeneratedColumn()
@@ -18,9 +23,11 @@ export class History {
   @Column()
   santriId: number;
 
-  // ... kolom lain ...
   @Column()
   totalAmount: number;
+
+  @Column({type: 'enum', enum: status, default: status.LUNAS})
+  status: status;
 
   // !! INI BAGIAN PENTING YANG HARUS ADA !!
   @ManyToOne(() => Santri, (santri) => santri.history, { onDelete: 'CASCADE' })

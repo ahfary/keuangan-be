@@ -26,6 +26,11 @@ export class SantriController {
     return this.santriService.getAllSantri();
   }
 
+  @Get('count')
+  async countSantri() {
+    return this.santriService.countSantri();
+  }
+
   @Get(':id')
   async getSantriDetail(@Param('id', ParseIntPipe) id: number) {
     return this.santriService.getSantriDetail(id);

@@ -25,6 +25,10 @@ export class SantriService extends BaseResponse {
     });
     return this.success('Success', santri);
   }
+  async countSantri():Promise<ResponseSuccess>{
+    const countSantri = await this.santri.count();
+    return this.success('Success', countSantri);
+  }
 
   async getSantriDetail(id: number) {
     const detail = await this.santri.findOne({
