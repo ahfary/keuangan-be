@@ -17,6 +17,9 @@ export class Kartu {
   @Column({ unique: true })
   nomorKartu: string;
 
+  @Column()
+  password:string
+
   @CreateDateColumn()
   createdAt: Date;
 
