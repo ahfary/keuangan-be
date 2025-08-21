@@ -31,9 +31,24 @@ export class SantriController {
     return this.santriService.countSantri();
   }
 
-  @Get(':id')
+  @Get('detail/:id')
   async getSantriDetail(@Param('id', ParseIntPipe) id: number) {
     return this.santriService.getSantriDetail(id);
+  }
+
+  @Get('total-saldo')
+  async getTotalSaldo() {
+    return this.santriService.totalSaldoSantri();
+  }
+
+  @Get('saldo-max')
+  async getSaldoTerbanyakSantri() {
+    return this.santriService.saldoTerbanyakSantri();
+  }
+
+  @Get('hutang')
+  async getTotalHutang() {
+    return this.santriService.totalHutangSantri();
   }
 
   @Post('create')

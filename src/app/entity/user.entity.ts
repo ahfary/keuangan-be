@@ -6,6 +6,11 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+enum role{
+  ADMIN = 'Admin',
+  WALISANTRI = 'Walisantri',
+}
+
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -17,8 +22,8 @@ export class User {
   @Column()
   name: string;
 
-  @Column({ default: 'admin' })
-  role: string; // admin, kasir, santri
+  @Column({type: 'enum', enum: role, default: role.WALISANTRI})
+  role: role; // admin, walisantri
 
   @Column()
   password: string;

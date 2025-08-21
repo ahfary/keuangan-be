@@ -25,7 +25,7 @@ export class SantriService extends BaseResponse {
     });
     return this.success('Success', santri);
   }
-  async countSantri():Promise<ResponseSuccess>{
+  async countSantri(): Promise<ResponseSuccess> {
     const countSantri = await this.santri.count();
     return this.success('Success', countSantri);
   }
@@ -155,9 +155,61 @@ export class SantriService extends BaseResponse {
   async deleteBulk(array: number[]): Promise<ResponseSuccess> {
     const deleted = await this.santri.delete(array);
 
-    if(deleted.affected == 0) {
+    if (deleted.affected == 0) {
       throw new HttpException('Santri Tidak Ditemukan', 404);
     }
     return this.success('Bulk delete successfully', deleted);
+  }
+
+  async totalSaldoSantri(): Promise<ResponseSuccess> {
+    const result = await this.santri
+      .createQueryBuilder('santri')
+      .select('SUM(santri.saldo)', 'totalSaldo')
+      .getRawOne<{ totalSaldo: string }>();
+
+    const totalSaldo = parseInt(result?.totalSaldo ?? '0', 10);
+
+    if (totalSaldo === 0) {
+      throw new NotFoundException('Tidak ada saldo santri yang ditemukan.');
+    }
+
+    return this.success(
+      'Total saldo semua santri berhasil dihitung.',
+      totalSaldo,
+    );
+  }
+
+  async totalHutangSantri(): Promise<ResponseSuccess> {
+  const result = await this.santri
+    .createQueryBuilder('santri')
+    .select('SUM(santri.hutang)', 'totalHutang')
+    .getRawOne<{ totalHutang: string }>();
+
+  const totalHutang = parseInt(result?.totalHutang ?? '0', 10);
+
+  if (totalHutang === 0) {
+    throw new NotFoundException('Tidak ada hutang santri yang ditemukan.');
+  }
+
+  return this.success(
+    'Total hutang semua santri berhasil dihitung.',
+    totalHutang,
+  );
+}
+
+
+  async saldoTerbanyakSantri(): Promise<ResponseSuccess> {
+    const santri = await this.santri.find({
+      order: { saldo: 'DESC' },
+    });
+
+    if (!santri) {
+      throw new NotFoundException('Tidak ada santri yang ditemukan.');
+    }
+
+    return this.success(
+      'Santri dengan saldo terbesar berhasil ditemukan.',
+      santri,
+    );
   }
 }

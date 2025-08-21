@@ -105,7 +105,7 @@ export class AuthService extends BaseResponse {
       throw new UnprocessableEntityException('User tidak ditemukan');
     }
 
-    if (checkUserExists.role !== 'admin') {
+    if (checkUserExists.role !== 'Admin') {
       throw new ForbiddenException('Hanya admin yang bisa login');
     }
 
