@@ -14,7 +14,7 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() payload: any) {
-    return this.authService.loginAdmin(payload);
+    return this.authService.login(payload);
   }
 
   @UseGuards(JwtGuard)

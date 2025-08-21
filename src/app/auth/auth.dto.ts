@@ -23,4 +23,9 @@ export class LoginDto {
   @IsString()
   @IsNotEmpty()
   password: string;
+
+  @IsNotEmpty()
+  @IsString()
+  role:string
+  
 }
