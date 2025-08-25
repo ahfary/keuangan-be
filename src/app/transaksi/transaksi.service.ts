@@ -15,18 +15,55 @@ export class TransaksiService extends BaseResponse {
     super();
   }
 
+  // async topUpSantri(id: number, jumlah: number) {
+  //   const santri = await this.santri.findOne({
+  //     where: {
+  //       id: id,
+  //     },
+  //   });
+
+  //   if (!santri) {
+  //     throw new HttpException('Santri tidak ditemukan', 404);
+  //   }
+  //   if (santri.hutang > 0) {
+  //     if (jumlah >= santri.hutang) {
+  //       const sisa = jumlah - santri.hutang;
+  //       santri.hutang = 0;
+  //       santri.saldo += sisa;
+  //     } else {
+  //       santri.hutang -= jumlah;
+  //     }
+  //   } else {
+  //     santri.saldo += jumlah;
+  //   }
+  //   const newSaldo = santri.saldo + jumlah;
+  //   const update = await this.santri.update(id, { saldo: newSaldo });
+  //   return this.success('Saldo berhasil ditambahkan', update);
+  // }
   async topUpSantri(id: number, jumlah: number) {
     const santri = await this.santri.findOne({
-      where: {
-        id: id,
+      where: { id },
+      select: {
+        id: true,
+        saldo: true,
+        hutang: true,
       },
     });
-    if (!santri) {
-      throw new HttpException('Santri tidak ditemukan', 404);
+    if (!santri) throw new HttpException('Santri tidak ditemukan', 404);
+
+    if (santri.hutang > 0) {
+      if (jumlah >= santri.hutang) {
+        const sisa = jumlah - santri.hutang;
+        santri.hutang = 0;
+        santri.saldo += sisa;
+      } else {
+        santri.hutang -= jumlah;
+      }
+    } else {
+      santri.saldo += jumlah;
     }
-    const newSaldo = santri.saldo + jumlah;
-    const update = await this.santri.update(id, { saldo: newSaldo });
-    return this.success('Saldo berhasil ditambahkan', update);
+    await this.santri.save(santri);
+    return this.success('Top up berhasil', santri);
   }
 
   async deductSantri(id: number, jumlah: number) {
@@ -44,6 +81,20 @@ export class TransaksiService extends BaseResponse {
     const newSaldo = santri.saldo - jumlah;
     const update = await this.santri.update(id, { saldo: newSaldo });
     return this.success('Saldo berhasil dikurangi', update);
+  }
+
+  async hutangSantri(id: number, jumlah: number) {
+    const santri = await this.santri.findOne({
+      where: {
+        id: id,
+      },
+    });
+    if (!santri) {
+      throw new HttpException('Santri tidak ditemukan', 404);
+    }
+    const newHutang = santri.hutang + jumlah;
+    const update = await this.santri.update(id, { hutang: newHutang });
+    return this.success('Berhasil menggunakan hutang', update);
   }
 
   // KARTU SANTRI

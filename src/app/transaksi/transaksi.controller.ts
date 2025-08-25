@@ -15,6 +15,11 @@ export class TransaksiController {
     return await this.transaksiService.deductSantri(id, jumlah);
   }
 
+  @Post('hutang/:id')
+  async hutangSantri(@Param('id') id: number, @Body('jumlah') jumlah: number) {
+    return await this.transaksiService.hutangSantri(id, jumlah);
+  }
+
   @Get('kartu')
   async getAllKartuSantri() {
     return await this.transaksiService.getAllKartuSantri();
