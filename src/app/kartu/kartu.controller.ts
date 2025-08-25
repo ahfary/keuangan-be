@@ -7,9 +7,13 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Put,
   Query,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { KartuService } from './kartu.service';
+import { CreateKartuDto, UpdateKartuDto } from './kartu.dto';
 
 @Controller('kartu')
 export class KartuController {
@@ -25,13 +29,20 @@ export class KartuController {
     return this.kartuService.getKartuById(id);
   }
 
-  @Post()
-  async createKartu(@Body() data: any) {
+  @Post('create')
+  @UsePipes(ValidationPipe)
+  async createKartu(@Body() data: CreateKartuDto) {
     return this.kartuService.createKartu(data);
   }
 
-  @Patch(':id')
-  async updateKartu(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
+  @Post('verify')
+  async verifyKartu(@Body() data: any) {
+    return this.kartuService.verifyKartu(data);
+  }
+
+  @Put(':id')
+  @UsePipes(ValidationPipe)
+  async updateKartu(@Param('id', ParseIntPipe) id: number, @Body() data: UpdateKartuDto) {
     return this.kartuService.updateKartu(id, data);
   }
 

@@ -4,6 +4,8 @@ import BaseResponse from 'src/utils/response.utils';
 import { Kartu } from '../entity/kartu_santri.entity';
 import { Repository } from 'typeorm';
 import { ResponseSuccess } from 'src/interface/response.interface';
+import { compare, hash } from 'bcrypt';
+import { CreateKartuDto, UpdateKartuDto } from './kartu.dto';
 
 @Injectable()
 export class KartuService extends BaseResponse {
@@ -55,17 +57,48 @@ export class KartuService extends BaseResponse {
     return this.success('Berhasil mendapatkan kartu santri', kartu);
   }
 
-  async createKartu(data?:any)  : Promise<ResponseSuccess> {
+  async createKartu(data: CreateKartuDto): Promise<ResponseSuccess> {
+    const kartuExists = await this.kartu.findOne({
+      where: { nomorKartu: data.nomorKartu },
+    });
+    if (kartuExists) {
+      throw new HttpException('Kartu dengan nomor ini sudah ada', 400);
+    }
+    data.passcode = await hash(data.passcode, 12);
     const kartu = await this.kartu.save(data);
     return this.success('Kartu santri berhasil dibuat', kartu);
   }
 
-  async updateKartu(id: number, data: any): Promise<ResponseSuccess> {
+  async verifyKartu(data:any): Promise<ResponseSuccess> {
+    const kartu = await this.kartu.findOne({
+      where: { nomorKartu : data.nomorKartu },
+    });
+
+    if (!kartu) {
+      throw new HttpException('Kartu tidak ditemukan', 404);
+    }
+
+    const isMatch = await compare(data.passcode, kartu.passcode);
+    if (!isMatch) {
+      throw new HttpException('Passcode salah', 401);
+    }
+
+    return this.success('Verifikasi berhasil', {
+      id: kartu.id,
+      nomorKartu: kartu.nomorKartu,
+    });
+  }
+
+  async updateKartu(id: number, data: UpdateKartuDto): Promise<ResponseSuccess> {
     const kartu = await this.kartu.findOne({
       where: { id },
     });
-    await this.kartu.update(id, data);
-    return this.success('Kartu santri berhasil diupdate', kartu);
+    if (!kartu) {
+      throw new HttpException('Kartu tidak ditemukan', 404);
+    }
+    data.passcode = await hash(data.passcode, 12);
+    const updatedKartu = await this.kartu.update(id, data);
+    return this.success('Kartu santri berhasil diupdate', updatedKartu);
   }
 
   async deleteKartu(id: number): Promise<ResponseSuccess> {
