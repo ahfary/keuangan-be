@@ -57,9 +57,8 @@ export class KartuService extends BaseResponse {
     return this.success('Berhasil mendapatkan kartu santri', kartu);
   }
 
-<<<<<<< HEAD
+
   async createKartu(data?: any): Promise<ResponseSuccess> {
-=======
   async createKartu(data: CreateKartuDto): Promise<ResponseSuccess> {
     const kartuExists = await this.kartu.findOne({
       where: { nomorKartu: data.nomorKartu },
@@ -68,7 +67,7 @@ export class KartuService extends BaseResponse {
       throw new HttpException('Kartu dengan nomor ini sudah ada', 400);
     }
     data.passcode = await hash(data.passcode, 12);
->>>>>>> 2b8b37ef3f6d535787780d94badd1959d8fcda5d
+
     const kartu = await this.kartu.save(data);
     return this.success('Kartu santri berhasil dibuat', kartu);
   }
