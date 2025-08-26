@@ -55,7 +55,7 @@ export class KartuService extends BaseResponse {
     return this.success('Berhasil mendapatkan kartu santri', kartu);
   }
 
-  async createKartu(data?:any)  : Promise<ResponseSuccess> {
+  async createKartu(data?: any): Promise<ResponseSuccess> {
     const kartu = await this.kartu.save(data);
     return this.success('Kartu santri berhasil dibuat', kartu);
   }

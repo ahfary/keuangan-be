@@ -18,7 +18,7 @@ export class Kartu {
   nomorKartu: string;
 
   @Column()
-  password:string
+  password: string;
 
   @CreateDateColumn()
   createdAt: Date;

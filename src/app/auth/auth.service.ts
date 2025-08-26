@@ -96,62 +96,62 @@ export class AuthService extends BaseResponse {
   }
 
   async login(payload: LoginDto): Promise<any> {
-  const checkUserExists = await this.auth.findOne({
-    where: {
-      email: payload.email,
-    },
-  });
+    const checkUserExists = await this.auth.findOne({
+      where: {
+        email: payload.email,
+      },
+    });
 
-  if (!checkUserExists) {
-    throw new UnprocessableEntityException('User tidak ditemukan');
-  }
+    if (!checkUserExists) {
+      throw new UnprocessableEntityException('User tidak ditemukan');
+    }
 
-  if (checkUserExists.role !== payload.role) {
-    throw new UnauthorizedException(
-      `Anda tidak memiliki hak akses sebagai ${payload.role}`,
+    if (checkUserExists.role !== payload.role) {
+      throw new UnauthorizedException(
+        `Anda tidak memiliki hak akses sebagai ${payload.role}`,
+      );
+    }
+
+    const checkPassword = await compare(
+      payload.password,
+      checkUserExists.password,
     );
-  }
 
-  const checkPassword = await compare(
-    payload.password,
-    checkUserExists.password,
-  );
+    if (!checkPassword) {
+      throw new UnprocessableEntityException('Email dan password tidak sesuai');
+    }
 
-  if (!checkPassword) {
-    throw new UnprocessableEntityException('Email dan password tidak sesuai');
-  }
-
-  const jwtPayload: jwtPayload = {
-    id: checkUserExists.id,
-    username: checkUserExists.name,
-    email: checkUserExists.email,
-    role: checkUserExists.role,
-  };
-
-  const access_token = this.generateJWT(
-    jwtPayload,
-    '1d',
-    process.env.ACCESS_TOKEN_SECRET!,
-  );
-  const refresh_token = this.generateJWT(
-    jwtPayload,
-    '1d',
-    process.env.REFRESH_TOKEN_SECRET!,
-  );
-
-  await this.auth.update(
-    {
+    const jwtPayload: jwtPayload = {
       id: checkUserExists.id,
-    },
-    {
-      refresh_token: refresh_token,
-    },
-  );
+      username: checkUserExists.name,
+      email: checkUserExists.email,
+      role: checkUserExists.role,
+    };
 
-  delete (checkUserExists as any).password;
+    const access_token = this.generateJWT(
+      jwtPayload,
+      '1d',
+      process.env.ACCESS_TOKEN_SECRET!,
+    );
+    const refresh_token = this.generateJWT(
+      jwtPayload,
+      '1d',
+      process.env.REFRESH_TOKEN_SECRET!,
+    );
 
-  return { ...checkUserExists, access_token, refresh_token };
-}
+    await this.auth.update(
+      {
+        id: checkUserExists.id,
+      },
+      {
+        refresh_token: refresh_token,
+      },
+    );
+
+    delete (checkUserExists as any).password;
+
+    return { ...checkUserExists, access_token, refresh_token };
+  }
 
   async profile(): Promise<any> {
     const user = await this.auth.findOne({
@@ -171,5 +171,4 @@ export class AuthService extends BaseResponse {
     }
     return { user };
   }
-  
 }

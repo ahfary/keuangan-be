@@ -24,8 +24,8 @@ export class ItemsController {
   }
 
   @Get('count')
-  async countItems(){
-    return this.itemsService.countItems();  
+  async countItems() {
+    return this.itemsService.countItems();
   }
 
   @Get(':id')

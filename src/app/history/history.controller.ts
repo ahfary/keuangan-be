@@ -35,7 +35,7 @@ export class HistoryController {
   }
 
   @Get('count')
-  async countHistory(@Query('status') status?: any){
-    return this.historyService.countHistory(status  );
+  async countHistory(@Query('status') status?: any) {
+    return this.historyService.countHistory(status);
   }
 }

@@ -10,7 +10,7 @@ import {
 import { Santri } from './santri.entity'; // Pastikan path import benar
 import { HistoryItem } from './history_item.entity';
 
-export enum status{
+export enum status {
   LUNAS = 'Lunas',
   HUTANG = 'Hutang',
 }
@@ -26,7 +26,7 @@ export class History {
   @Column()
   totalAmount: number;
 
-  @Column({type: 'enum', enum: status, default: status.LUNAS})
+  @Column({ type: 'enum', enum: status, default: status.LUNAS })
   status: status;
 
   // !! INI BAGIAN PENTING YANG HARUS ADA !!

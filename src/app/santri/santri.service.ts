@@ -180,23 +180,22 @@ export class SantriService extends BaseResponse {
   }
 
   async totalHutangSantri(): Promise<ResponseSuccess> {
-  const result = await this.santri
-    .createQueryBuilder('santri')
-    .select('SUM(santri.hutang)', 'totalHutang')
-    .getRawOne<{ totalHutang: string }>();
+    const result = await this.santri
+      .createQueryBuilder('santri')
+      .select('SUM(santri.hutang)', 'totalHutang')
+      .getRawOne<{ totalHutang: string }>();
 
-  const totalHutang = parseInt(result?.totalHutang ?? '0', 10);
+    const totalHutang = parseInt(result?.totalHutang ?? '0', 10);
 
-  if (totalHutang === 0) {
-    throw new NotFoundException('Tidak ada hutang santri yang ditemukan.');
+    if (totalHutang === 0) {
+      throw new NotFoundException('Tidak ada hutang santri yang ditemukan.');
+    }
+
+    return this.success(
+      'Total hutang semua santri berhasil dihitung.',
+      totalHutang,
+    );
   }
-
-  return this.success(
-    'Total hutang semua santri berhasil dihitung.',
-    totalHutang,
-  );
-}
-
 
   async saldoTerbanyakSantri(): Promise<ResponseSuccess> {
     const santri = await this.santri.find({

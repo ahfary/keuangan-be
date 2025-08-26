@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-enum role{
+enum role {
   ADMIN = 'Admin',
   WALISANTRI = 'Walisantri',
 }
@@ -22,7 +22,7 @@ export class User {
   @Column()
   name: string;
 
-  @Column({type: 'enum', enum: role, default: role.WALISANTRI})
+  @Column({ type: 'enum', enum: role, default: role.WALISANTRI })
   role: role; // admin, walisantri
 
   @Column()
