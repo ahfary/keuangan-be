@@ -50,8 +50,8 @@ export class SantriService extends BaseResponse {
         id: id,
       },
     });
-    await this.santri.update(id, data);
-    return this.success('Santri updated successfully', santri);
+    const update = await this.santri.update(id, data);
+    return this.success('Santri updated successfully', update);
   }
 
   async updateBulk(ids: number[], data: any | any[]): Promise<ResponseSuccess> {
