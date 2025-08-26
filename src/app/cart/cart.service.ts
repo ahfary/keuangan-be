@@ -82,17 +82,9 @@ export class CartService extends BaseResponse {
   }
 
   async getCart(santriId: number) {
-    // const cart = await this.cart.findOne({
-    //   where: { santriId },
-    //   relations: {
-    //     cartItems: {
-    //       item: true
-    //     }
-    //   }
-    // });
     const cart = await this.cart.findOne({
       where: { santriId },
-      relations: ['items', 'santri'],
+      relations: ['cartItems', 'cartItems.item', 'santri'],
     });
 
     if (!cart) {

@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -31,7 +32,7 @@ export class KategoriController {
     return this.kategoriService.createKategori(data);
   }
 
-  @Post('update/:id')
+  @Patch('update/:id')
   async updateKategori(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: any,

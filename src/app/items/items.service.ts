@@ -3,12 +3,12 @@ import {
   HttpException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import BaseResponse from 'src/utils/response.utils';
-import { PrismaService } from '../prisma/prisma.service';
 import { ResponseSuccess } from 'src/interface/response.interface';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
-import { createItemDto } from './items.dto';
+import { createItemDto, UpdateItemDto } from './items.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Items } from '../entity/items.entity';
 import { Repository } from 'typeorm';
@@ -77,11 +77,32 @@ export class ItemsService extends BaseResponse {
     }
   }
 
-  async updateItem(id: number, data: any): Promise<ResponseSuccess> {
-    const updatedItem = await this.items.findOneBy({ id: id });
-    await this.items.update(id, data);
-    return this.success('Item updated successfully', updatedItem);
+  async updateItem(id: number, data: UpdateItemDto, file?: Express.Multer.File): Promise<ResponseSuccess> {
+  const item = await this.items.findOneBy({ id });
+  if (!item) {
+    throw new NotFoundException('Item tidak ditemukan');
   }
+
+  let updatedImageUrl = item.gambar;
+  if (file) {
+    const uploadedImage = await this.cloudinaryService.uploadFile(file);
+    updatedImageUrl = uploadedImage.secure_url;
+  }
+
+  const dataToUpdate = {
+    ...data,
+    harga: data.harga ? Number(data.harga) : item.harga,
+    jumlah: data.jumlah ? Number(data.jumlah) : item.jumlah,
+    gambar: updatedImageUrl,
+    kategoriId: data.kategoriId ? Number(data.kategoriId) : item.kategoriId,
+  };
+
+  const updatedItem = await this.items.save({ ...item, ...dataToUpdate });
+
+  return this.success('Item updated successfully', updatedItem);
+}
+
+
 
   async deleteItem(id: number): Promise<ResponseSuccess> {
     const deletedItem = await this.items.findOneBy({ id: id });
