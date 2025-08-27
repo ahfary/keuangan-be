@@ -13,6 +13,11 @@ export class HistoryController {
     return this.historyService.checkout(dto);
   }
 
+  @Post('hutang')
+  async checkoutHutang(@Body() dto: CheckoutDto) {
+    return this.historyService.checkoutHutang(dto);
+  }
+
   @Get()
   async getAll() {
     return this.historyService.getHistory();

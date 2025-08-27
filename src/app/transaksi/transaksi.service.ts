@@ -78,6 +78,17 @@ export class TransaksiService extends BaseResponse {
     if (santri.saldo < jumlah) {
       throw new HttpException('Saldo tidak mencukupi', 400);
     }
+    if (santri.hutang > 0) {
+      if (jumlah >= santri.hutang) {
+        const sisa = jumlah - santri.hutang;
+        santri.hutang = 0;
+        santri.saldo += sisa;
+      } else {
+        santri.hutang -= jumlah;
+      }
+    } else {
+      santri.saldo += jumlah;
+    }
     const newSaldo = santri.saldo - jumlah;
     const update = await this.santri.update(id, { saldo: newSaldo });
     return this.success('Saldo berhasil dikurangi', update);
