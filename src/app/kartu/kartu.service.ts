@@ -58,7 +58,6 @@ export class KartuService extends BaseResponse {
   }
 
 
-  async createKartu(data?: any): Promise<ResponseSuccess> {
   async createKartu(data: CreateKartuDto): Promise<ResponseSuccess> {
     const kartuExists = await this.kartu.findOne({
       where: { nomorKartu: data.nomorKartu },

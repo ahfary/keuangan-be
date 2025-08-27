@@ -18,11 +18,7 @@ export class Kartu {
   nomorKartu: string;
 
   @Column()
-<<<<<<< HEAD
-  password: string;
-=======
-  passcode:string
->>>>>>> 2b8b37ef3f6d535787780d94badd1959d8fcda5d
+  passcode: string;
 
   @CreateDateColumn()
   createdAt: Date;
