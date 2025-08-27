@@ -9,7 +9,6 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Kategori } from './kategori.entity';
-import { CartItem } from './cart_item.entity';
 import { HistoryItem } from './history_item.entity';
 
 @Entity()
@@ -38,9 +37,6 @@ export class Items {
 
   @Column()
   gambar: string;
-
-  @OneToMany(() => CartItem, (cartItem) => cartItem.item)
-  cartItems: CartItem[];
 
   @OneToMany(() => HistoryItem, (historyItem) => historyItem.item)
   historyItems: HistoryItem[];

@@ -16,7 +16,7 @@ async function bootstrap() {
     })
   )
   app.enableCors({
-    origin: '*', // Izinkan semua domain (baik untuk pengembangan)
+    origin: ['*', "http://localhost:3000"], // Izinkan semua domain (baik untuk pengembangan)
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });

@@ -7,7 +7,6 @@ import { AuthModule } from './app/auth/auth.module';
 import { SantriModule } from './app/santri/santri.module';
 import { ItemsModule } from './app/items/items.module';
 import { CloudinaryModule } from './app/cloudinary/cloudinary.module';
-import { CartModule } from './app/cart/cart.module';
 import { HistoryModule } from './app/history/history.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { KategoriModule } from './app/kategori/kategori.module';
@@ -32,7 +31,6 @@ import { WebsocketModule } from './app/websocket/websocket.module';
     SantriModule,
     ItemsModule,
     CloudinaryModule,
-    CartModule,
     HistoryModule,
     KategoriModule,
     TransaksiModule,

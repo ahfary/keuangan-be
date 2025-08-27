@@ -8,7 +8,6 @@ import {
   OneToMany,
 } from 'typeorm';
 import { History } from './history.entity';
-import { Cart } from './cart.entity';
 import { Kartu } from './kartu_santri.entity';
 
 enum Jurusan {
@@ -41,9 +40,6 @@ export class Santri {
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  @OneToOne(() => Cart, (cart) => cart.santri)
-  cart: Cart;
 
   @OneToMany(() => History, (history) => history.santri)
   history: History[];
