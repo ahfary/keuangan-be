@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import BaseResponse from 'src/utils/response.utils';
@@ -7,30 +11,47 @@ import { Items } from '../entity/items.entity';
 import { History } from '../entity/history.entity';
 import { HistoryItem } from '../entity/history_item.entity';
 import { CheckoutDto } from './history.dto';
+import { ResponseSuccess } from 'src/interface/response.interface';
 
 @Injectable()
 export class HistoryService extends BaseResponse {
   constructor(
-    @InjectRepository(Santri) private readonly santriRepository: Repository<Santri>,
-    @InjectRepository(Items) private readonly itemsRepository: Repository<Items>,
-    @InjectRepository(History) private readonly historyRepository: Repository<History>,
+    @InjectRepository(Santri)
+    private readonly santriRepository: Repository<Santri>,
+    @InjectRepository(Items)
+    private readonly itemsRepository: Repository<Items>,
+    @InjectRepository(History)
+    private readonly historyRepository: Repository<History>,
   ) {
     super();
+  }
+
+  async getHistory(): Promise<ResponseSuccess> {
+    const history = await this.historyRepository.find({
+      relations: ['santri', 'items'],
+    });
+    return this.success('History retrieved successfully', history);
   }
 
   async checkout(dto: CheckoutDto) {
     const { santriId, items } = dto;
 
-    const santri = await this.santriRepository.findOne({ where: { id: santriId } });
-    if (!santri) throw new NotFoundException(`Santri ID ${santriId} tidak ditemukan`);
+    const santri = await this.santriRepository.findOne({
+      where: { id: santriId },
+    });
+    if (!santri)
+      throw new NotFoundException(`Santri ID ${santriId} tidak ditemukan`);
 
     let totalAmount = 0;
-    const itemDetails:any = [];
+    const itemDetails: any = [];
 
     // validasi stok + hitung total
     for (const i of items) {
-      const item = await this.itemsRepository.findOne({ where: { id: i.itemId } });
-      if (!item) throw new NotFoundException(`Item ${i.itemId} tidak ditemukan`);
+      const item = await this.itemsRepository.findOne({
+        where: { id: i.itemId },
+      });
+      if (!item)
+        throw new NotFoundException(`Item ${i.itemId} tidak ditemukan`);
       if (item.jumlah < i.quantity) {
         throw new BadRequestException(`Stok '${item.nama}' tidak cukup`);
       }
