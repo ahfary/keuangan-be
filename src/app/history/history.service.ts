@@ -29,6 +29,7 @@ export class HistoryService extends BaseResponse {
   async getHistory(): Promise<ResponseSuccess> {
     const history = await this.historyRepository.find({
       relations: ['santri', 'items'],
+      // order : {createdAt :}
     });
     return this.success('History retrieved successfully', history);
   }

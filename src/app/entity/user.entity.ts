@@ -28,6 +28,12 @@ export class User {
   @Column()
   password: string;
 
+  @Column({ type: 'varchar', length: 6, nullable: true }) 
+  resetToken: string | null;
+
+  @Column({ type: 'datetime', nullable: true })
+  resetTokenExpiry: Date | null;
+
   @Column({ type: 'text', nullable: true })
   refresh_token: string;
 

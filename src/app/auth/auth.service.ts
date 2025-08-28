@@ -20,6 +20,7 @@ import { Repository } from 'typeorm';
 import { User } from '../entity/user.entity';
 import { ResponseSuccess } from 'src/interface/response.interface';
 import BaseResponse from 'src/utils/response.utils';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService extends BaseResponse {
@@ -27,6 +28,7 @@ export class AuthService extends BaseResponse {
     @InjectRepository(User) private readonly auth: Repository<User>,
     private jwtService: JwtService,
     @Inject(REQUEST) private req: any,
+    private mailService: MailService,
   ) {
     super();
   }
@@ -152,6 +154,44 @@ export class AuthService extends BaseResponse {
 
     return { ...checkUserExists, access_token, refresh_token };
   }
+
+  async forgotPassword(email: string) {
+  const user = await this.auth.findOne({ where: { email } });
+  if (!user) throw new NotFoundException('User tidak ditemukan');
+
+  // Generate OTP 6 digit
+  const token = Math.floor(100000 + Math.random() * 900000).toString();
+
+  // Expired 1 jam
+  const expiry = new Date();
+  expiry.setHours(expiry.getHours() + 1);
+
+  user.resetToken = token;
+  user.resetTokenExpiry = expiry;
+  await this.auth.save(user);
+
+  await this.mailService.sendResetPassword(user.email, token);
+
+  return { message: 'Kode reset password berhasil dikirim ke email' };
+}
+
+async resetPassword(token: string, newPassword: string) {
+  const user = await this.auth.findOne({ where: { resetToken: token } });
+  if (!user) throw new NotFoundException('Token tidak valid');
+
+  if (user.resetTokenExpiry! < new Date()) {
+    throw new NotFoundException('Token sudah expired');
+  }
+
+  const hashed = await hash(newPassword, 12);
+  user.password = hashed;
+  user.resetToken = null;
+  user.resetTokenExpiry = null;
+
+  await this.auth.save(user);
+
+  return { message: 'Password berhasil direset' };
+}
 
   async profile(): Promise<any> {
     const user = await this.auth.findOne({

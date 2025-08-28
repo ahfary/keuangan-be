@@ -14,6 +14,7 @@ import { TransaksiModule } from './app/transaksi/transaksi.module';
 // import { MidtransModule } from './app/midtrans/midtrans.module';
 import { KartuModule } from './app/kartu/kartu.module';
 import { WebsocketModule } from './app/websocket/websocket.module';
+import { MailModule } from './app/mail/mail.module';
 
 @Global()
 @Module({
@@ -37,6 +38,7 @@ import { WebsocketModule } from './app/websocket/websocket.module';
     // MidtransModule,
     KartuModule,
     WebsocketModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
