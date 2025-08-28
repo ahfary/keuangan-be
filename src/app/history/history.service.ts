@@ -8,7 +8,7 @@ import { Repository } from 'typeorm';
 import BaseResponse from 'src/utils/response.utils';
 import { Santri } from '../entity/santri.entity';
 import { Items } from '../entity/items.entity';
-import { History } from '../entity/history.entity';
+import { History, status } from '../entity/history.entity';
 import { HistoryItem } from '../entity/history_item.entity';
 import { CheckoutDto } from './history.dto';
 import { ResponseSuccess } from 'src/interface/response.interface';
@@ -103,7 +103,8 @@ export class HistoryService extends BaseResponse {
     });
   }
 
-  async checkoutHutang(dto: CheckoutDto) {
+
+async checkoutHutang(dto: CheckoutDto) {
   const { santriId, items } = dto;
 
   const santri = await this.santriRepository.findOne({
@@ -131,33 +132,28 @@ export class HistoryService extends BaseResponse {
   }
 
   return await this.historyRepository.manager.transaction(async (manager) => {
-    // 🔹 kalau saldo cukup → kurangi saldo
     if (santri.saldo >= totalAmount) {
+      // saldo cukup → kurangi saldo
       await manager.decrement(Santri, { id: santriId }, 'saldo', totalAmount);
     } else {
-      // 🔹 kalau saldo ga cukup → masukin ke hutang
-      await manager.increment(
-        Santri,
-        { id: santriId },
-        'hutang',
-        totalAmount,
-      );
+      // saldo ga cukup → masuk hutang
+      await manager.increment(Santri, { id: santriId }, 'hutang', totalAmount);
     }
 
-    // 🔹 kurangi stok item
+    // kurangi stok item
     for (const d of itemDetails) {
       await manager.decrement(Items, { id: d.id }, 'jumlah', d.quantity);
     }
 
-    // 🔹 bikin history
+    // bikin history (pakai enum status)
     const newHistory = manager.create(History, {
       santriId,
       totalAmount,
-      isDebt: santri.saldo < totalAmount, // flag biar tau ini hutang atau bukan
+      status: santri.saldo >= totalAmount ? status.LUNAS : status.HUTANG,
     });
     await manager.save(newHistory);
 
-    // 🔹 bikin history items
+    // bikin history items
     const historyItems = itemDetails.map((d) =>
       manager.create(HistoryItem, {
         history: newHistory,
@@ -187,5 +183,6 @@ export class HistoryService extends BaseResponse {
     );
   });
 }
+
 
 }
