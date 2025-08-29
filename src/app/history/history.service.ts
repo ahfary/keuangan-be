@@ -26,10 +26,23 @@ export class HistoryService extends BaseResponse {
     super();
   }
 
-  async getHistory(): Promise<ResponseSuccess> {
+  async getHistory(sort: 'asc' | 'desc', status: History['status']): Promise<ResponseSuccess> {
+    if(status){
+      const history = await this.historyRepository.find({
+        relations: ['santri', 'items'],
+        where: { status: status },
+        order: {
+          createdAt: sort,
+        }
+      });
+      return this.success('History retrieved successfully', history);
+    }
+
     const history = await this.historyRepository.find({
       relations: ['santri', 'items'],
-      // order : {createdAt :}
+      order: {
+        createdAt: sort,
+      }
     });
     return this.success('History retrieved successfully', history);
   }

@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { HistoryService } from './history.service';
 import { CheckoutDto } from './history.dto';
 import { JwtGuard } from '../auth/jwt.guard';
+import { status } from '../entity/history.entity';
 
 // @UseGuards(JwtGuard)
 @Controller('history')
@@ -19,7 +20,10 @@ export class HistoryController {
   }
 
   @Get()
-  async getAll() {
-    return this.historyService.getHistory();
+  async getAll(
+    @Query('sort') sort: 'asc' | 'desc',
+    @Query('status') status: status
+) {
+    return this.historyService.getHistory(sort ?? "desc",status);
   }
 }

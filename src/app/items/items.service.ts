@@ -22,13 +22,31 @@ export class ItemsService extends BaseResponse {
     super();
   }
 
-  async getAllItems(): Promise<ResponseSuccess> {
-    const items = await this.items.find();
-    if (items.length == 0) {
-      throw new HttpException('Items not found', 404);
-    }
-    return this.success('Items retrieved successfully', items);
+  async getAllItemsByKategoriNama(namaKategori?: string): Promise<ResponseSuccess> {
+  let items;
+
+  if (namaKategori) {
+    items = await this.items.find({
+      relations: ['kategori'],
+      where: {
+        kategori: {
+          nama: namaKategori,
+        },
+      },
+    });
+  } else {
+    items = await this.items.find({
+      relations: ['kategori'],
+    });
   }
+
+  if (items.length === 0) {
+    throw new HttpException('Items not found', 404);
+  }
+
+  return this.success('Items retrieved successfully', items);
+}
+
 
   async countItems(): Promise<ResponseSuccess> {
     const countItem = await this.items.count();

@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -19,8 +20,8 @@ export class ItemsController {
   constructor(private readonly itemsService: ItemsService) {}
 
   @Get()
-  async getAllItems() {
-    return this.itemsService.getAllItems();
+  getAllItems(@Query('kategori') kategori?: string) {
+    return this.itemsService.getAllItemsByKategoriNama(kategori);
   }
 
   @Get('count')
