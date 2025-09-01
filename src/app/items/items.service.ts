@@ -25,24 +25,33 @@ export class ItemsService extends BaseResponse {
   async getAllItems(namaKategori?: string, barcode?: string): Promise<ResponseSuccess> {
   let items;
 
-  if(barcode){
-    items = await this.items.findOne({
+  if (namaKategori && barcode) {
+    // Filter kategori + barcode
+    items = await this.items.find({
+      relations: ['kategori'],
+      where: {
+        kategori: { nama: namaKategori },
+        barcode: barcode,
+      },
+    });
+  } else if (namaKategori) {
+    // Filter hanya kategori
+    items = await this.items.find({
+      relations: ['kategori'],
+      where: {
+        kategori: { nama: namaKategori },
+      },
+    });
+  } else if (barcode) {
+    // Filter hanya barcode
+    items = await this.items.find({
       relations: ['kategori'],
       where: {
         barcode: barcode,
       },
     });
-  }
-  if (namaKategori) {
-    items = await this.items.find({
-      relations: ['kategori'],
-      where: {
-        kategori: {
-          nama: namaKategori,
-        },
-      },
-    });
   } else {
+    // Ambil semua
     items = await this.items.find({
       relations: ['kategori'],
     });
@@ -54,6 +63,7 @@ export class ItemsService extends BaseResponse {
 
   return this.success('Items retrieved successfully', items);
 }
+
 
 
   async countItems(): Promise<ResponseSuccess> {
