@@ -22,9 +22,17 @@ export class ItemsService extends BaseResponse {
     super();
   }
 
-  async getAllItemsByKategoriNama(namaKategori?: string): Promise<ResponseSuccess> {
+  async getAllItems(namaKategori?: string, barcode?: string): Promise<ResponseSuccess> {
   let items;
 
+  if(barcode){
+    items = await this.items.findOne({
+      relations: ['kategori'],
+      where: {
+        barcode: barcode,
+      },
+    });
+  }
   if (namaKategori) {
     items = await this.items.find({
       relations: ['kategori'],

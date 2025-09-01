@@ -38,8 +38,8 @@ export class Items {
   @Column()
   gambar: string;
 
-  // @Column()
-  // barcode:string;
+  @Column({nullable:true})
+  barcode:string;
 
   @OneToMany(() => HistoryItem, (historyItem) => historyItem.item)
   historyItems: HistoryItem[];

@@ -20,8 +20,8 @@ export class ItemsController {
   constructor(private readonly itemsService: ItemsService) {}
 
   @Get()
-  getAllItems(@Query('kategori') kategori?: string) {
-    return this.itemsService.getAllItemsByKategoriNama(kategori);
+  getAllItems(@Query('kategori') kategori?: string, @Query('barcode') barcode?: string) {
+    return this.itemsService.getAllItems(kategori,barcode);
   }
 
   @Get('count')

@@ -146,13 +146,6 @@ async checkoutHutang(dto: CheckoutDto) {
   }
 
   return await this.historyRepository.manager.transaction(async (manager) => {
-    if (santri.saldo >= totalAmount) {
-      // saldo cukup → kurangi saldo
-      await manager.decrement(Santri, { id: santriId }, 'saldo', totalAmount);
-    } else {
-      // saldo ga cukup → masuk hutang
-      await manager.increment(Santri, { id: santriId }, 'hutang', totalAmount);
-    }
 
     // kurangi stok item
     for (const d of itemDetails) {
