@@ -1,6 +1,5 @@
 #Custom
-/src/app/midtrans
-/src/app/cart
+# /src/app/midtrans
 
 # compiled output
 /dist

@@ -15,6 +15,7 @@ import { TransaksiModule } from './app/transaksi/transaksi.module';
 import { KartuModule } from './app/kartu/kartu.module';
 import { WebsocketModule } from './app/websocket/websocket.module';
 import { MailModule } from './app/mail/mail.module';
+import { MidtransModule } from './app/midtrans/midtrans.module';
 
 @Global()
 @Module({
@@ -35,7 +36,7 @@ import { MailModule } from './app/mail/mail.module';
     HistoryModule,
     KategoriModule,
     TransaksiModule,
-    // MidtransModule,
+    MidtransModule,
     KartuModule,
     WebsocketModule,
     MailModule,
