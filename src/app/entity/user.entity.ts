@@ -4,7 +4,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToOne,
 } from 'typeorm';
+import { Parent } from './parent.entity';
 
 enum role {
   ADMIN = 'Admin',
@@ -42,4 +44,7 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToOne(() => Parent, (parent) => parent.user)
+  parent: Parent;
 }

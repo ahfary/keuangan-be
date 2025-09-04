@@ -6,9 +6,11 @@ import {
   UpdateDateColumn,
   OneToOne,
   OneToMany,
+  ManyToOne,
 } from 'typeorm';
 import { History } from './history.entity';
 import { Kartu } from './kartu_santri.entity';
+import { Parent } from './parent.entity';
 
 enum Jurusan {
   TKJ = 'TKJ',
@@ -45,5 +47,8 @@ export class Santri {
   history: History[];
 
   @OneToOne(() => Kartu, (kartu) => kartu.santri)
-  kartu: Kartu; // Bukan owner, jadi nggak ada @JoinColumn
+  kartu: Kartu;
+
+  @ManyToOne(() => Parent, (parent) => parent.santri, { onDelete: 'SET NULL' })
+  parent: Parent;
 }

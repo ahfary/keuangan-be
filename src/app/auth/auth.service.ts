@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   HttpException,
@@ -21,11 +22,15 @@ import { User } from '../entity/user.entity';
 import { ResponseSuccess } from 'src/interface/response.interface';
 import BaseResponse from 'src/utils/response.utils';
 import { MailService } from '../mail/mail.service';
+import { Santri } from '../entity/santri.entity';
+import { Parent } from '../entity/parent.entity';
 
 @Injectable()
 export class AuthService extends BaseResponse {
   constructor(
     @InjectRepository(User) private readonly auth: Repository<User>,
+    @InjectRepository(Santri) private readonly santri: Repository<Santri>,
+    @InjectRepository(Parent) private readonly parent: Repository<Parent>,
     private jwtService: JwtService,
     @Inject(REQUEST) private req: any,
     private mailService: MailService,
@@ -97,6 +102,59 @@ export class AuthService extends BaseResponse {
     return this.success('Register Success', user);
   }
 
+  async generateWalsan(santriId: number): Promise<ResponseSuccess> {
+  const santri = await this.santri.findOne({
+    where: { id: santriId },
+    relations: ['parent'],
+  });
+
+  if (!santri) {
+    throw new NotFoundException('Santri tidak ditemukan');
+  }
+
+  if (santri.parent) {
+    throw new ConflictException('Santri sudah memiliki walsan');
+  }
+
+  // generate akun user untuk parent
+  const random = Math.floor(1000 + Math.random() * 9000);
+  const email = `walsan_${santri.name}${random}@smkmq.com`;
+  const name = `Walsan ${santri.name}`;
+
+  const exist = await this.auth.findOne({ where: { email } });
+  if (exist) {
+    throw new BadRequestException('Email sudah digunakan, coba generate lagi');
+  }
+
+  const password = await hash('smkmqbisa', 12);
+
+  // buat User untuk Parent
+  const user = this.auth.create({
+    name,
+    email,
+    password,
+  });
+  await this.auth.save(user);
+
+  // buat Parent
+  const parent = this.parent.create({
+    name,
+    user,
+  });
+  await this.parent.save(parent);
+
+  // assign Parent ke Santri
+  santri.parent = parent;
+  await this.santri.save(santri);
+
+  return this.success('Generate Akun Walsan Success', {
+    user,
+    parent,
+    santri,
+  });
+}
+
+
   async login(payload: LoginDto): Promise<any> {
     const checkUserExists = await this.auth.findOne({
       where: {
@@ -156,42 +214,42 @@ export class AuthService extends BaseResponse {
   }
 
   async forgotPassword(email: string) {
-  const user = await this.auth.findOne({ where: { email } });
-  if (!user) throw new NotFoundException('User tidak ditemukan');
+    const user = await this.auth.findOne({ where: { email } });
+    if (!user) throw new NotFoundException('User tidak ditemukan');
 
-  // Generate OTP 6 digit
-  const token = Math.floor(100000 + Math.random() * 900000).toString();
+    // Generate OTP 6 digit
+    const token = Math.floor(100000 + Math.random() * 900000).toString();
 
-  // Expired 1 jam
-  const expiry = new Date();
-  expiry.setHours(expiry.getHours() + 1);
+    // Expired 1 jam
+    const expiry = new Date();
+    expiry.setHours(expiry.getHours() + 1);
 
-  user.resetToken = token;
-  user.resetTokenExpiry = expiry;
-  await this.auth.save(user);
+    user.resetToken = token;
+    user.resetTokenExpiry = expiry;
+    await this.auth.save(user);
 
-  await this.mailService.sendResetPassword(user.email, token);
+    await this.mailService.sendResetPassword(user.email, token);
 
-  return { message: 'Kode reset password berhasil dikirim ke email' };
-}
-
-async resetPassword(token: string, newPassword: string) {
-  const user = await this.auth.findOne({ where: { resetToken: token } });
-  if (!user) throw new NotFoundException('Token tidak valid');
-
-  if (user.resetTokenExpiry! < new Date()) {
-    throw new NotFoundException('Token sudah expired');
+    return { message: 'Kode reset password berhasil dikirim ke email' };
   }
 
-  const hashed = await hash(newPassword, 12);
-  user.password = hashed;
-  user.resetToken = null;
-  user.resetTokenExpiry = null;
+  async resetPassword(token: string, newPassword: string) {
+    const user = await this.auth.findOne({ where: { resetToken: token } });
+    if (!user) throw new NotFoundException('Token tidak valid');
 
-  await this.auth.save(user);
+    if (user.resetTokenExpiry! < new Date()) {
+      throw new NotFoundException('Token sudah expired');
+    }
 
-  return { message: 'Password berhasil direset' };
-}
+    const hashed = await hash(newPassword, 12);
+    user.password = hashed;
+    user.resetToken = null;
+    user.resetTokenExpiry = null;
+
+    await this.auth.save(user);
+
+    return { message: 'Password berhasil direset' };
+  }
 
   async profile(): Promise<any> {
     const user = await this.auth.findOne({

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './auth.dto';
 import { JwtGuard } from './jwt.guard';
@@ -10,6 +10,11 @@ export class AuthController {
   @Post('register')
   async register(@Body() payload: RegisterDto) {
     return this.authService.register(payload);
+  }
+
+  @Post('generate-walsan/:santriId')
+  async generateWalsan(@Param('santriId') santriId: number) {
+    return this.authService.generateWalsan(santriId);
   }
 
   @Post('login')

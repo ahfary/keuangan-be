@@ -109,6 +109,7 @@ export class ItemsService extends BaseResponse {
       // Handle error jika upload gagal
       throw new InternalServerErrorException(
         'Gagal mengunggah gambar atau menyimpan item.',
+        error.message,
       );
     }
   }

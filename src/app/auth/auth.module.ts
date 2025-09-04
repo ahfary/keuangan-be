@@ -8,10 +8,12 @@ import { JwtRefreshTokenStrategy } from './jwtRefreshToken.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../entity/user.entity';
 import { MailModule } from '../mail/mail.module';
+import { Santri } from '../entity/santri.entity';
+import { Parent } from '../entity/parent.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Santri, Parent]),
     JwtModule.register({}),
     MailModule,
   ],
