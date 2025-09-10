@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { SantriService } from './santri.service';
 import { JwtGuard } from '../auth/jwt.guard';
-import { DeductSaldoDto } from './santri.dto';
+import { DeductSaldoDto, UpdateSantriDto } from './santri.dto';
 import { Santri } from '../entity/santri.entity';
 import { Kartu } from '../entity/kartu_santri.entity';
 
@@ -57,7 +57,7 @@ export class SantriController {
   }
 
   @Put('update/:id')
-  async updateSantri(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
+  async updateSantri(@Param('id', ParseIntPipe) id: number, @Body() data:UpdateSantriDto) {
     return this.santriService.updateSantri(id, data);
   }
 

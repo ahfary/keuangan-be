@@ -1,6 +1,6 @@
 import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { DeductSaldoDto } from './santri.dto';
+import { DeductSaldoDto, UpdateSantriDto } from './santri.dto';
 import { ResponseSuccess } from 'src/interface/response.interface';
 import BaseResponse from 'src/utils/response.utils';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -44,7 +44,7 @@ export class SantriService extends BaseResponse {
     return this.success('Santri created successfully', santri);
   }
 
-  async updateSantri(id: number, data: any) {
+  async updateSantri(id: number, data: UpdateSantriDto) {
     const santri = await this.santri.findOne({
       where: {
         id: id,

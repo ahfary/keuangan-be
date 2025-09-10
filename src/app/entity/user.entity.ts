@@ -8,8 +8,9 @@ import {
 } from 'typeorm';
 import { Parent } from './parent.entity';
 
-enum role {
+export enum role {
   ADMIN = 'Admin',
+  KASIR = 'Kasir',
   WALISANTRI = 'Walisantri',
 }
 

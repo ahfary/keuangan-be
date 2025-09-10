@@ -12,7 +12,7 @@ import { History } from './history.entity';
 import { Kartu } from './kartu_santri.entity';
 import { Parent } from './parent.entity';
 
-enum Jurusan {
+export enum Jurusan {
   TKJ = 'TKJ',
   RPL = 'RPL',
 }

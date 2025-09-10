@@ -41,6 +41,9 @@ export class Items {
   @Column({nullable:true})
   barcode:string;
 
+  @Column({nullable:true})
+  jumlah_restock: number;
+
   @OneToMany(() => HistoryItem, (historyItem) => historyItem.item)
   historyItems: HistoryItem[];
 

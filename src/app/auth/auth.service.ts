@@ -18,7 +18,7 @@ import { Prisma } from '@prisma/client';
 import { compare, hash } from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../entity/user.entity';
+import { role, User } from '../entity/user.entity';
 import { ResponseSuccess } from 'src/interface/response.interface';
 import BaseResponse from 'src/utils/response.utils';
 import { MailService } from '../mail/mail.service';
@@ -97,8 +97,15 @@ export class AuthService extends BaseResponse {
       throw new HttpException('User already exist', HttpStatus.FOUND);
     }
 
-    payload.password = await hash(payload.password, 12);
-    const user = await this.auth.save(payload);
+    const hashed = payload.password = await hash(payload.password, 12);
+    const user = await this.auth.create({
+      name: payload.name,
+      email: payload.email,
+      password: hashed,
+      role: payload.role as role,
+    });
+    
+    await this.auth.save(user);
     return this.success('Register Success', user);
   }
 

@@ -22,49 +22,50 @@ export class ItemsService extends BaseResponse {
     super();
   }
 
-  async getAllItems(namaKategori?: string, barcode?: string): Promise<ResponseSuccess> {
-  let items;
+  async getAllItems(
+    namaKategori?: string,
+    barcode?: string,
+  ): Promise<ResponseSuccess> {
+    let items;
 
-  if (namaKategori && barcode) {
-    // Filter kategori + barcode
-    items = await this.items.find({
-      relations: ['kategori'],
-      where: {
-        kategori: { nama: namaKategori },
-        barcode: barcode,
-      },
-    });
-  } else if (namaKategori) {
-    // Filter hanya kategori
-    items = await this.items.find({
-      relations: ['kategori'],
-      where: {
-        kategori: { nama: namaKategori },
-      },
-    });
-  } else if (barcode) {
-    // Filter hanya barcode
-    items = await this.items.find({
-      relations: ['kategori'],
-      where: {
-        barcode: barcode,
-      },
-    });
-  } else {
-    // Ambil semua
-    items = await this.items.find({
-      relations: ['kategori'],
-    });
+    if (namaKategori && barcode) {
+      // Filter kategori + barcode
+      items = await this.items.find({
+        relations: ['kategori'],
+        where: {
+          kategori: { nama: namaKategori },
+          barcode: barcode,
+        },
+      });
+    } else if (namaKategori) {
+      // Filter hanya kategori
+      items = await this.items.find({
+        relations: ['kategori'],
+        where: {
+          kategori: { nama: namaKategori },
+        },
+      });
+    } else if (barcode) {
+      // Filter hanya barcode
+      items = await this.items.find({
+        relations: ['kategori'],
+        where: {
+          barcode: barcode,
+        },
+      });
+    } else {
+      // Ambil semua
+      items = await this.items.find({
+        relations: ['kategori'],
+      });
+    }
+
+    if (items.length === 0) {
+      throw new HttpException('Items not found', 404);
+    }
+
+    return this.success('Items retrieved successfully', items);
   }
-
-  if (items.length === 0) {
-    throw new HttpException('Items not found', 404);
-  }
-
-  return this.success('Items retrieved successfully', items);
-}
-
-
 
   async countItems(): Promise<ResponseSuccess> {
     const countItem = await this.items.count();
@@ -114,32 +115,65 @@ export class ItemsService extends BaseResponse {
     }
   }
 
-  async updateItem(id: number, data: UpdateItemDto, file?: Express.Multer.File): Promise<ResponseSuccess> {
-  const item = await this.items.findOneBy({ id });
-  if (!item) {
-    throw new NotFoundException('Item tidak ditemukan');
+  async updateItem(
+    id: number,
+    data: UpdateItemDto,
+    file?: Express.Multer.File,
+  ): Promise<ResponseSuccess> {
+    const item = await this.items.findOneBy({ id });
+    if (!item) {
+      throw new NotFoundException('Item tidak ditemukan');
+    }
+    let updatedImageUrl = item.gambar;
+    if (file) {
+      const uploadedImage = await this.cloudinaryService.uploadFile(file);
+      updatedImageUrl = uploadedImage.secure_url;
+    }
+    const dataToUpdate = {
+      ...data,
+      harga: data.harga ? Number(data.harga) : item.harga,
+      jumlah: data.jumlah ? Number(data.jumlah) : item.jumlah,
+      gambar: updatedImageUrl,
+      kategoriId: data.kategoriId ? Number(data.kategoriId) : item.kategoriId,
+    };
+    const updatedItem = await this.items.save({ ...item, ...dataToUpdate });
+    return this.success('Item updated successfully', updatedItem);
   }
 
-  let updatedImageUrl = item.gambar;
-  if (file) {
-    const uploadedImage = await this.cloudinaryService.uploadFile(file);
-    updatedImageUrl = uploadedImage.secure_url;
-  }
+  // async updateItem(
+  //   id: number,
+  //   data: UpdateItemDto,
+  //   file?: Express.Multer.File,
+  // ): Promise<ResponseSuccess> {
+  //   const item = await this.items.findOneBy({ id });
+  //   if (!item) {
+  //     throw new NotFoundException('Item tidak ditemukan');
+  //   }
 
-  const dataToUpdate = {
-    ...data,
-    harga: data.harga ? Number(data.harga) : item.harga,
-    jumlah: data.jumlah ? Number(data.jumlah) : item.jumlah,
-    gambar: updatedImageUrl,
-    kategoriId: data.kategoriId ? Number(data.kategoriId) : item.kategoriId,
-  };
+  //   let updatedImageUrl = item.gambar;
+  //   if (file) {
+  //     const uploadedImage = await this.cloudinaryService.uploadFile(file);
+  //     updatedImageUrl = uploadedImage.secure_url;
+  //   }
 
-  const updatedItem = await this.items.save({ ...item, ...dataToUpdate });
+  //   const jumlahTambahan = data.jumlah
+  //     ? Number(data.jumlah) * item.jumlah_restock
+  //     : 0;
 
-  return this.success('Item updated successfully', updatedItem);
-}
+  //   const newJumlah = item.jumlah + jumlahTambahan;
 
+  //   const dataToUpdate = {
+  //     ...data,
+  //     harga: data.harga ? Number(data.harga) : item.harga,
+  //     jumlah: newJumlah,
+  //     gambar: updatedImageUrl,
+  //     kategoriId: data.kategoriId ? Number(data.kategoriId) : item.kategoriId,
+  //   };
 
+  //   const updatedItem = await this.items.save({ ...item, ...dataToUpdate });
+
+  //   return this.success('Item updated successfully', updatedItem);
+  // }
 
   async deleteItem(id: number): Promise<ResponseSuccess> {
     const deletedItem = await this.items.findOneBy({ id: id });

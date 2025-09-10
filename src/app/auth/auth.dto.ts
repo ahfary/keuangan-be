@@ -1,4 +1,5 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { role } from '../entity/user.entity';
 
 export class RegisterDto {
   @IsString()
@@ -13,6 +14,10 @@ export class RegisterDto {
   @IsNotEmpty()
   @MinLength(8, { message: 'Password harus memiliki setidaknya 6 karakter' })
   password: string;
+
+  @IsNotEmpty()
+  @IsEnum(role, { message: 'Role harus salah satu dari Admin, Kasir, atau Walisantri' })
+  role: string;
 }
 
 export class LoginDto {
