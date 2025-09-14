@@ -15,6 +15,10 @@ export class CreateSantriDto {
   @IsNotEmpty()
   @IsString()
   kelas: string;
+
+  @IsEnum(Jurusan, {message: 'Jurusan harus salah satu dari TKJ atau RPL'})
+  @IsOptional()
+  jurusan?: Jurusan;
 }
 
 export class UpdateSantriDto {
