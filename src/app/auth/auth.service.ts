@@ -237,7 +237,8 @@ export class AuthService extends BaseResponse {
 
     await this.mailService.sendResetPassword(user.email, token);
 
-    return { message: 'Kode reset password berhasil dikirim ke email' };
+    // return { message: 'Kode reset password berhasil dikirim ke email' };
+    return this.success('Kode reset password berhasil dikirim ke email', token);
   }
 
   async resetPassword(token: string, newPassword: string) {
