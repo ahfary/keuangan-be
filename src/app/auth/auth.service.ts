@@ -45,19 +45,24 @@ export class AuthService extends BaseResponse {
     });
   }
 
-  async refreshToken(id: any, token: string): Promise<any> {
+  async refreshToken(id: number, token: string): Promise<ResponseSuccess> {
     const checkUserExists = await this.auth.findOne({
-      // ✅ Menggunakan findFirst
       where: {
         id: id,
         refresh_token: token,
       },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        password: true,
+        refresh_token: true,
+      },
     });
 
-    if (!checkUserExists) {
-      throw new UnauthorizedException(
-        'Refresh token tidak valid atau user tidak ditemukan',
-      );
+    console.log('user', checkUserExists);
+    if (checkUserExists === null) {
+      throw new UnauthorizedException();
     }
 
     const jwtPayload: jwtPayload = {
@@ -67,24 +72,28 @@ export class AuthService extends BaseResponse {
       role: checkUserExists.role,
     };
 
-    const access_token = this.generateJWT(
+    const access_token = await this.generateJWT(
       jwtPayload,
       '1d',
       process.env.ACCESS_TOKEN_SECRET!,
     );
-    const refresh_token = this.generateJWT(
+
+    const refresh_token = await this.generateJWT(
       jwtPayload,
       '1d',
       process.env.REFRESH_TOKEN_SECRET!,
     );
 
-    // ✅ Menggunakan update
     await this.auth.save({
       refresh_token: refresh_token,
       id: checkUserExists.id,
     });
 
-    return { ...checkUserExists, access_token, refresh_token };
+    return this.success('Success', {
+      ...checkUserExists,
+      access_token: access_token,
+      refresh_token: refresh_token,
+    });
   }
 
   async register(payload: RegisterDto): Promise<ResponseSuccess> {

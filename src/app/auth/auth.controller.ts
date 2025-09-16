@@ -1,7 +1,16 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './auth.dto';
-import { JwtGuard } from './jwt.guard';
+import { JwtGuard, JwtGuardRefreshToken } from './jwt.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -20,6 +29,14 @@ export class AuthController {
   @Post('login')
   async login(@Body() payload: any) {
     return this.authService.login(payload);
+  }
+
+  @UseGuards(JwtGuardRefreshToken)
+  @Get('refresh-token')
+  async refreshToken(@Req() req: any) {
+    const token = req.headers.authorization.split(' ')[1];
+    const id = req.headers.id;
+    return this.authService.refreshToken(+id, token);
   }
 
   @Post('lupa-password')

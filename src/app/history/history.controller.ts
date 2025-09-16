@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, UseGuards } from '@nestjs/common';
 import { HistoryService } from './history.service';
 import { CheckoutDto } from './history.dto';
 import { JwtGuard } from '../auth/jwt.guard';
@@ -25,5 +25,14 @@ export class HistoryController {
     @Query('status') status: status
 ) {
     return this.historyService.getHistory(sort ?? "desc",status);
+  }
+
+  @Get('santri/:id')
+  async getHistoryBySantriId(
+    @Param('id', ParseIntPipe) santriId: number,
+    @Query('sort') sort: 'asc' | 'desc' = 'desc',
+    @Query('status') status?: status,
+  ) {
+    return this.historyService.getHistoryBySantriId(santriId, sort, status);
   }
 }
