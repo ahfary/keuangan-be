@@ -49,6 +49,15 @@ export class HistoryService extends BaseResponse {
     });
     return this.success('History retrieved successfully', history);
   }
+
+  async getHistoryById(id: number): Promise<ResponseSuccess> {
+    const history = await this.historyRepository.findOne({
+      where: { id },
+      relations: ['santri', 'items'],
+    });
+    return this.success('History retrieved successfully', history);
+  }
+
   async getHistoryBySantriId(
     santriId: number,
     sort: 'asc' | 'desc',

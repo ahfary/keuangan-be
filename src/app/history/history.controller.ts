@@ -35,4 +35,9 @@ export class HistoryController {
   ) {
     return this.historyService.getHistoryBySantriId(santriId, sort, status);
   }
+
+  @Get(':id')
+  async getHistoryById(@Param('id', ParseIntPipe) id: number) {
+    return this.historyService.getHistoryById(id);
+  }
 }
