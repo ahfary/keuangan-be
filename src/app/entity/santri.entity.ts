@@ -49,6 +49,6 @@ export class Santri {
   @OneToOne(() => Kartu, (kartu) => kartu.santri)
   kartu: Kartu;
 
-  @ManyToOne(() => Parent, (parent) => parent.santri, { onDelete: 'SET NULL' })
+  @ManyToOne(() => Parent, (parent) => parent.santri, { onDelete: 'SET NULL' , nullable: true })
   parent: Parent;
 }

@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Santri } from '../entity/santri.entity';
 import { DataSource, In, Repository } from 'typeorm';
 import { Kartu } from '../entity/kartu_santri.entity';
+import { Parent } from '../entity/parent.entity';
 
 @Injectable()
 export class SantriService extends BaseResponse {
@@ -14,6 +15,7 @@ export class SantriService extends BaseResponse {
     // private prismaService: PrismaService,
     @InjectRepository(Santri) private readonly santri: Repository<Santri>,
     @InjectRepository(Kartu) private readonly kartu: Repository<Kartu>,
+    @InjectRepository(Parent) private readonly parent: Repository<Parent>,
     private readonly dataSource: DataSource,
   ) {
     super();
@@ -29,6 +31,19 @@ export class SantriService extends BaseResponse {
     const countSantri = await this.santri.count();
     return this.success('Success', countSantri);
   }
+
+  async findAllWalsan(): Promise<ResponseSuccess> {
+  const walsanUsers = await this.parent.find({
+    relations: ['user', 'santri'], // relasi langsung sesuai entity Parent
+  });
+
+  if (!walsanUsers || walsanUsers.length === 0) {
+    return this.success('Data walsan kosong', []);
+  }
+
+  return this.success('Berhasil mengambil semua data walsan', walsanUsers);
+}
+
 
   async getSantriDetail(id: number) {
     const detail = await this.santri.findOne({
@@ -50,6 +65,10 @@ export class SantriService extends BaseResponse {
         id: id,
       },
     });
+
+    if (!santri) {
+      throw new NotFoundException('Santri not found');
+    }
     const update = await this.santri.update(id, data);
     return this.success('Santri updated successfully', update);
   }

@@ -26,6 +26,11 @@ export class SantriController {
     return this.santriService.getAllSantri();
   }
 
+  @Get('walsan')
+  async findAllWalsan() {
+    return this.santriService.findAllWalsan();
+  }
+
   @Get('count')
   async countSantri() {
     return this.santriService.countSantri();
