@@ -13,15 +13,18 @@ import {
 } from '@nestjs/common';
 import { ItemsService } from './items.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { createItemDto } from './items.dto';
+import { createItemDto, UpdateItemDto } from './items.dto';
 
 @Controller('items')
 export class ItemsController {
   constructor(private readonly itemsService: ItemsService) {}
 
   @Get()
-  getAllItems(@Query('kategori') kategori?: string, @Query('barcode') barcode?: string) {
-    return this.itemsService.getAllItems(kategori,barcode);
+  getAllItems(
+    @Query('kategori') kategori?: string,
+    @Query('barcode') barcode?: string,
+  ) {
+    return this.itemsService.getAllItems(kategori, barcode);
   }
 
   @Get('count')
@@ -44,8 +47,13 @@ export class ItemsController {
   }
 
   @Put('update/:id')
-  async updateItem(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
-    return this.itemsService.updateItem(id, data);
+  @UseInterceptors(FileInterceptor('gambar'))
+  async updateItem(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UpdateItemDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    return this.itemsService.updateItem(id, data, file);
   }
 
   @Delete('delete/:id')

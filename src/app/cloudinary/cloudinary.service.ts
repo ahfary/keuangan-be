@@ -27,4 +27,18 @@ export class CloudinaryService {
       streamifier.createReadStream(file.buffer).pipe(uploadStream);
     });
   }
+
+  async deleteFile(publicId: string) {
+    return await cloudinary.uploader.destroy(publicId);
+  }
+
+  extractPublicId(url: string): string | null {
+    if (!url) return null;
+    // contoh url: https://res.cloudinary.com/demo/image/upload/v1234567890/items/abc123.jpg
+    const parts = url.split('/');
+    const filename = parts[parts.length - 1]; // abc123.jpg
+    const publicId = filename.split('.')[0]; // abc123
+    const folder = parts[parts.length - 2]; // items (optional kalau ada folder)
+    return `${folder}/${publicId}`;
+  }
 }

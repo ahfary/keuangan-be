@@ -2,14 +2,23 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import BaseResponse from 'src/utils/response.utils';
 import * as Midtrans from 'midtrans-client';
 import { ConfigService } from '@nestjs/config';
-import { CreateTransactionDto } from './midtrans.dto';
 import * as crypto from 'crypto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { TransactionHistory } from '../entity/history_midtrans.entity';
+import { Santri } from '../entity/santri.entity';
 
 @Injectable()
 export class MidtransService extends BaseResponse {
   private snap: Midtrans.Snap;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    @InjectRepository(TransactionHistory)
+    private historyRepo: Repository<TransactionHistory>,
+    @InjectRepository(Santri)
+    private santriRepo: Repository<Santri>,
+  ) {
     super();
     this.snap = new Midtrans.Snap({
       isProduction: this.configService.get<string>('MIDTRANS_IS_PRODUCTION') === 'true',
@@ -24,15 +33,9 @@ export class MidtransService extends BaseResponse {
     const parameter = {
       transaction_details: {
         order_id: orderId,
-        gross_amount: grossAmount,
+        gross_amount: Number(grossAmount),
       },
       item_details: items,
-      // customer_details: {
-      //   first_name: 'Budi',
-      //   last_name: 'Utomo',
-      //   email: 'budi.utomo@example.com',
-      //   phone: '081234567890',
-      // },
     };
 
     try {
@@ -45,45 +48,59 @@ export class MidtransService extends BaseResponse {
   }
 
   async handleNotification(notification: any) {
-    console.log('Menerima notifikasi dari Midtrans:', JSON.stringify(notification, null, 2));
+  console.log('📩 Notif Midtrans:', JSON.stringify(notification, null, 2));
 
-    // Verifikasi Signature Key
-    const serverKey = this.configService.get<string>('MIDTRANS_SERVER_KEY');
-    const hash = crypto
-      .createHash('sha512')
-      .update(
-        notification.order_id +
-          notification.status_code +
-          notification.gross_amount +
-          serverKey,
-      )
-      .digest('hex');
+  const serverKey = this.configService.get<string>('MIDTRANS_SERVER_KEY');
 
-    if (hash !== notification.signature_key) {
-      // console.error('Invalid signature key');
-      return;
+  // Hitung signature yang seharusnya
+  const expectedSignature = crypto.createHash('sha512')
+    .update(notification.order_id + notification.status_code + notification.gross_amount + serverKey)
+    .digest('hex');
+
+  console.log('🔑 Expected Signature:', expectedSignature);
+  console.log('🔑 Incoming Signature:', notification.signature_key);
+
+  // Validasi signature
+  if (expectedSignature !== notification.signature_key) {
+    console.error('❌ Invalid signature, notif diabaikan');
+    return { valid: false, message: 'Invalid signature' };
+  }
+
+  // Simpan ke transaction_history
+  const history = this.historyRepo.create({
+    orderId: notification.order_id,
+    transactionStatus: notification.transaction_status,
+    fraudStatus: notification.fraud_status,
+    paymentType: notification.payment_type,
+    grossAmount: parseInt(notification.gross_amount, 10),
+    statusCode: notification.status_code,
+    signatureKey: notification.signature_key,
+  });
+  await this.historyRepo.save(history);
+
+  // Kalau transaksi berhasil → update saldo santri
+  if (
+    notification.transaction_status === 'settlement' ||
+    (notification.transaction_status === 'capture' && notification.fraud_status === 'accept') ||
+    notification.transaction_status === 'success' // kalau dashboard ngirim success
+  ) {
+    const santriId = this.extractSantriIdFromOrder(notification.order_id);
+
+    const santri = await this.santriRepo.findOne({ where: { id: santriId } });
+    if (santri) {
+      santri.saldo += parseInt(notification.gross_amount, 10);
+      await this.santriRepo.save(santri);
+      console.log(`✅ Saldo santri ${santri.name} bertambah +${notification.gross_amount}`);
     }
+  }
 
-    const orderId = notification.order_id;
-    const transactionStatus = notification.transaction_status;
-    const fraudStatus = notification.fraud_status;
+  return { valid: true, message: 'Notification processed & saved' };
+}
 
-    console.log(`Transaksi ${orderId}: status ${transactionStatus}, fraud ${fraudStatus}`);
+private extractSantriIdFromOrder(orderId: string): number {
+  // contoh orderId = TOPUP-SANTRI-15-1695392023
+  const parts = orderId.split('-');
+  return parseInt(parts[2], 10);
+}
 
-    if (transactionStatus === 'capture') {
-      if (fraudStatus === 'accept') {
-        console.log(`Pembayaran untuk order ${orderId} berhasil.`);
-      }
-    } else if (transactionStatus === 'settlement') {
-      console.log(`Pembayaran untuk order ${orderId} telah diselesaikan.`);
-    } else if (
-      transactionStatus === 'cancel' ||
-      transactionStatus === 'deny' ||
-      transactionStatus === 'expire'
-    ) {
-      console.log(`Pembayaran untuk order ${orderId} gagal.`);
-    } else if (transactionStatus === 'pending') {
-      console.log(`Pembayaran untuk order ${orderId} masih pending.`);
-    }
-  } 
 }

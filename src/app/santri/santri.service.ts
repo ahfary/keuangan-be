@@ -23,7 +23,12 @@ export class SantriService extends BaseResponse {
 
   async getAllSantri(): Promise<ResponseSuccess> {
     const santri = await this.santri.find({
-      relations: ['kartu'],
+      relations: ['kartu', 'parent'],
+      select : {
+        parent : {
+          id : true
+        }
+      }
     });
     return this.success('Success', santri);
   }

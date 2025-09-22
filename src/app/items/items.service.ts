@@ -120,23 +120,60 @@ export class ItemsService extends BaseResponse {
     data: UpdateItemDto,
     file?: Express.Multer.File,
   ): Promise<ResponseSuccess> {
-    const item = await this.items.findOneBy({ id });
+    // cek dulu item
+    const item = await this.items.findOne({
+      where: { id },
+      relations: ['kategori'],
+    });
     if (!item) {
       throw new NotFoundException('Item tidak ditemukan');
     }
+
+    // default gambar lama
     let updatedImageUrl = item.gambar;
+
+    // kalau ada file baru → replace
     if (file) {
-      const uploadedImage = await this.cloudinaryService.uploadFile(file);
-      updatedImageUrl = uploadedImage.secure_url;
+      try {
+        // 🔑 optional: hapus file lama dari Cloudinary
+        const publicId = this.cloudinaryService.extractPublicId(item.gambar);
+        if (publicId) {
+          await this.cloudinaryService.deleteFile(publicId);
+        }
+
+        // upload gambar baru
+        const uploadedImage = await this.cloudinaryService.uploadFile(file);
+        updatedImageUrl = uploadedImage.secure_url;
+      } catch (error) {
+        throw new InternalServerErrorException(
+          'Gagal mengganti gambar',
+          error.message,
+        );
+      }
     }
+
+    // build data update
     const dataToUpdate = {
       ...data,
-      harga: data.harga ? Number(data.harga) : item.harga,
-      jumlah: data.jumlah ? Number(data.jumlah) : item.jumlah,
+      harga: data.harga !== undefined ? Number(data.harga) : item.harga,
+      jumlah: data.jumlah !== undefined ? Number(data.jumlah) : item.jumlah,
       gambar: updatedImageUrl,
-      kategoriId: data.kategoriId ? Number(data.kategoriId) : item.kategoriId,
+      kategori: data.kategoriId ? { id: Number(data.kategoriId) } : item.kategori,
     };
-    const updatedItem = await this.items.save({ ...item, ...dataToUpdate });
+
+    // update di DB
+    await this.items.update(id, dataToUpdate);
+
+    // ambil ulang data baru
+    const updatedItem = await this.items.findOne({
+      where: { id },
+      relations: ['kategori'],
+    });
+
+    if (!updatedItem) {
+      throw new NotFoundException('Item gagal diupdate');
+    }
+
     return this.success('Item updated successfully', updatedItem);
   }
 
