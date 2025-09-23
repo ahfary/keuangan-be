@@ -28,14 +28,13 @@ export class MidtransService extends BaseResponse {
   }
 
   async createTransaction(dto: any) {
-    const { orderId, grossAmount, items } = dto;
+    const { orderId, grossAmount,  } = dto;
 
     const parameter = {
       transaction_details: {
         order_id: orderId,
         gross_amount: Number(grossAmount),
       },
-      item_details: items,
     };
 
     try {

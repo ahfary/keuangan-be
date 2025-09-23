@@ -149,6 +149,7 @@ export class AuthService extends BaseResponse {
     name,
     email,
     password,
+    role: role.WALISANTRI,
   });
   await this.auth.save(user);
 
