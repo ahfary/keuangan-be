@@ -177,6 +177,7 @@ export class AuthService extends BaseResponse {
       where: {
         email: payload.email,
       },
+      relations : ['parent', 'parent.santri']
     });
 
     if (!checkUserExists) {

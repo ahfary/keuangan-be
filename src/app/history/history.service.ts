@@ -167,7 +167,7 @@ export class HistoryService extends BaseResponse {
     let totalAmount = 0;
     const itemDetails: any = [];
 
-    // validasi stok + hitung total
+    // Validasi stok + hitung total
     for (const i of items) {
       const item = await this.itemsRepository.findOne({
         where: { id: i.itemId },
@@ -182,26 +182,48 @@ export class HistoryService extends BaseResponse {
       itemDetails.push({ ...item, quantity: i.quantity });
     }
 
+    // --- LOGIKA BARU DIMULAI DARI SINI ---
     return await this.historyRepository.manager.transaction(async (manager) => {
-      // kurangi stok item
+      // Kurangi stok item terlebih dahulu
       for (const d of itemDetails) {
         await manager.decrement(Items, { id: d.id }, 'jumlah', d.quantity);
       }
 
-      // bikin history (pakai enum status)
+      let statusTransaksi: status;
+      let pesanResponse: string;
+
+      // Logika pembayaran hutang/saldo
+      if (santri.saldo >= totalAmount) {
+        // Jika saldo cukup, langsung kurangi saldo
+        santri.saldo -= totalAmount;
+        statusTransaksi = status.LUNAS;
+        pesanResponse = 'Checkout berhasil, saldo dikurangi';
+      } else {
+        // Jika saldo tidak cukup
+        const sisaHutang = totalAmount - santri.saldo;
+        santri.saldo = 0; // Habiskan saldo
+        santri.hutang += sisaHutang; // Tambahkan sisa ke hutang
+        statusTransaksi = status.HUTANG;
+        pesanResponse = 'Checkout berhasil (saldo habis, hutang dicatat)';
+      }
+
+      // Simpan perubahan pada santri
+      await manager.save(Santri, santri);
+
+      // Buat record di history
       const newHistory = manager.create(History, {
         santriId,
         totalAmount,
-        status: santri.saldo >= totalAmount ? status.LUNAS : status.HUTANG,
+        status: statusTransaksi,
       });
       await manager.save(newHistory);
 
-      // bikin history items
+      // Buat record di history_items
       const historyItems = itemDetails.map((d) =>
         manager.create(HistoryItem, {
           history: newHistory,
           itemId: d.id,
-          itemName: d.nama,
+          // itemName: d.nama, // Asumsi kolom ini tidak ada lagi di entity
           quantity: d.quantity,
           priceAtPurchase: d.harga,
         }),
@@ -209,21 +231,18 @@ export class HistoryService extends BaseResponse {
       await manager.save(historyItems);
 
       return this.success(
-        santri.saldo >= totalAmount
-          ? 'Checkout berhasil'
-          : 'Checkout berhasil (hutang dicatat)',
+        pesanResponse,
         {
           history: newHistory,
           totalAmount,
           items: historyItems.map((h) => ({
             itemId: h.itemId,
-            itemName: h.itemName,
             quantity: h.quantity,
             priceAtPurchase: h.priceAtPurchase,
             subtotal: h.priceAtPurchase * h.quantity,
           })),
         },
-      );
-    });
-  }
+      );
+    });
+  }
 }
