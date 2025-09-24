@@ -209,6 +209,15 @@ export class SantriService extends BaseResponse {
     return this.success('Bulk delete successfully', deleted);
   }
 
+  async deleteBulkWalsan(array: number[]): Promise<ResponseSuccess> {
+    const deleted = await this.parent.delete(array);
+
+    if (deleted.affected == 0) {
+      throw new HttpException('Santri Tidak Ditemukan', 404);
+    }
+    return this.success('Bulk delete successfully', deleted);
+  } 
+
   async totalSaldoSantri(): Promise<ResponseSuccess> {
     const result = await this.santri
       .createQueryBuilder('santri')

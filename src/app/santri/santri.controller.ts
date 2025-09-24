@@ -94,4 +94,10 @@ export class SantriController {
     const parsedIds = ids.split(',').map(Number);
     return this.santriService.deleteBulk(parsedIds);
   }
+
+  @Delete('delete-bulk-walsan')
+  async deleteBulkWalsan(@Query('id') ids: string) {
+    const parsedIds = ids.split(',').map(Number);
+    return this.santriService.deleteBulkWalsan(parsedIds);
+  }
 }
