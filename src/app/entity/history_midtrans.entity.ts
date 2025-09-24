@@ -1,6 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('transaction_history')
+@Entity()
 export class TransactionHistory {
   @PrimaryGeneratedColumn()
   id: number;
@@ -11,13 +11,13 @@ export class TransactionHistory {
   @Column()
   transactionStatus: string;
 
-  @Column({ nullable: true })
+  @Column()
   fraudStatus: string;
 
-  @Column({ nullable: true })
+  @Column()
   paymentType: string;
 
-  @Column({ type: 'int' })
+  @Column()
   grossAmount: number;
 
   @Column()

@@ -10,5 +10,6 @@ import { HistoryTransaksi } from '../entity/history_transaksi.entity';
   imports: [TypeOrmModule.forFeature([Santri, Kartu, HistoryTransaksi])],
   controllers: [TransaksiController],
   providers: [TransaksiService],
+  exports : [TransaksiService],
 })
 export class TransaksiModule {}

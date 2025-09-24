@@ -8,6 +8,7 @@ import { Santri } from '../entity/santri.entity';
 import { DataSource, In, Repository } from 'typeorm';
 import { Kartu } from '../entity/kartu_santri.entity';
 import { Parent } from '../entity/parent.entity';
+import { role } from '../entity/user.entity';
 
 @Injectable()
 export class SantriService extends BaseResponse {
@@ -38,16 +39,39 @@ export class SantriService extends BaseResponse {
   }
 
   async findAllWalsan(): Promise<ResponseSuccess> {
-  const walsanUsers = await this.parent.find({
-    relations: ['user', 'santri'], // relasi langsung sesuai entity Parent
+  const parents = await this.parent.find({
+    relations: ['user', 'santri'],
   });
 
-  if (!walsanUsers || walsanUsers.length === 0) {
+  if (!parents || parents.length === 0) {
     return this.success('Data walsan kosong', []);
   }
 
-  return this.success('Berhasil mengambil semua data walsan', walsanUsers);
+  const walsanParents = parents.filter(
+    p => p.user && p.user.role === role.WALISANTRI,
+  );
+
+  const responseData = walsanParents.map(parent => {
+    if (!parent.user) return null;
+
+    // buang password dengan destructuring
+    const { password, ...safeUser } = parent.user;
+
+    return {
+      id: safeUser.id,
+      email: safeUser.email,
+      name: safeUser.name,
+      parent: {
+        id: parent.id,
+        name: parent.name,
+        santri: parent.santri,
+      },
+    };
+  }).filter(Boolean); // filter null kalau ada parent.user yang undefined
+
+  return this.success('Berhasil mengambil semua data walsan', responseData);
 }
+
 
 
   async getSantriDetail(id: number) {
