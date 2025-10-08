@@ -13,7 +13,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { REQUEST } from '@nestjs/core';
-import { LoginDto, RegisterDto } from './auth.dto';
+import { LoginDto, LoginWalsanDto, RegisterDto } from './auth.dto';
 import { Prisma } from '@prisma/client';
 import { compare, hash } from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -145,13 +145,14 @@ export class AuthService extends BaseResponse {
   const password = await hash('smkmqbisa', 12);
 
   // buat User untuk Parent
-  const user = this.auth.create({
-    name,
-    email,
-    password,
-    role: role.WALISANTRI,
-  });
-  await this.auth.save(user);
+    const user = this.auth.create({
+      name,
+      email,
+      username: name,
+      password,
+      role: role.WALISANTRI,
+    });
+    await this.auth.save(user);
 
   // buat Parent
   const parent = this.parent.create({
@@ -176,6 +177,64 @@ export class AuthService extends BaseResponse {
     const checkUserExists = await this.auth.findOne({
       where: {
         email: payload.email,
+      },
+      relations : ['parent', 'parent.santri']
+    });
+
+    if (!checkUserExists) {
+      throw new UnprocessableEntityException('User tidak ditemukan');
+    }
+
+    if (checkUserExists.role !== payload.role) {
+      throw new UnauthorizedException(
+        `Anda tidak memiliki hak akses sebagai ${payload.role}`,
+      );
+    }
+
+    const checkPassword = await compare(
+      payload.password,
+      checkUserExists.password,
+    );
+
+    if (!checkPassword) {
+      throw new UnprocessableEntityException('Email dan password tidak sesuai');
+    }
+
+    const jwtPayload: jwtPayload = {
+      id: checkUserExists.id,
+      username: checkUserExists.name,
+      email: checkUserExists.email,
+      role: checkUserExists.role,
+    };
+
+    const access_token = this.generateJWT(
+      jwtPayload,
+      '1d',
+      process.env.ACCESS_TOKEN_SECRET!,
+    );
+    const refresh_token = this.generateJWT(
+      jwtPayload,
+      '1d',
+      process.env.REFRESH_TOKEN_SECRET!,
+    );
+
+    await this.auth.update(
+      {
+        id: checkUserExists.id,
+      },
+      {
+        refresh_token: refresh_token,
+      },
+    );
+
+    delete (checkUserExists as any).password;
+
+    return { ...checkUserExists, access_token, refresh_token };
+  }
+  async loginWalsan(payload: LoginWalsanDto): Promise<any> {
+    const checkUserExists = await this.auth.findOne({
+      where: {
+        username: payload.username,
       },
       relations : ['parent', 'parent.santri']
     });

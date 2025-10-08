@@ -31,6 +31,11 @@ export class AuthController {
     return this.authService.login(payload);
   }
 
+  @Post('login-walsan')
+  async loginWalsan(@Body() payload: any) {
+    return this.authService.loginWalsan(payload);
+  }
+
   @UseGuards(JwtGuardRefreshToken)
   @Get('refresh-token')
   async refreshToken(@Req() req: any) {

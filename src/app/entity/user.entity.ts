@@ -25,6 +25,9 @@ export class User {
   @Column()
   name: string;
 
+  @Column({nullable: true, unique: true})
+  username: string;
+
   @Column({ type: 'enum', enum: role, default: role.WALISANTRI })
   role: role; // admin, walisantri
 

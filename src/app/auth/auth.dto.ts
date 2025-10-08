@@ -33,3 +33,17 @@ export class LoginDto {
   @IsString()
   role: string;
 }
+
+export class LoginWalsanDto {
+  @IsString()
+  @IsNotEmpty()
+  username: string;
+
+  @IsString()
+  @IsNotEmpty()
+  password: string;
+
+  // @IsNotEmpty()
+  @IsString()
+  role: string;
+}
