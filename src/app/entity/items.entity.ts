@@ -42,7 +42,7 @@ export class Items {
   barcode:string;
 
   @Column({nullable:true})
-  jumlah_restock: number;
+  jumlahRestock: number;
 
   @OneToMany(() => HistoryItem, (historyItem) => historyItem.item)
   historyItems: HistoryItem[];

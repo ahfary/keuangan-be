@@ -17,6 +17,9 @@ export class createItemDto {
 
   @IsOptional()
   barcode?: string;
+
+  @IsOptional()
+  jumlahRestock?: number;
 }
 
 export class UpdateItemDto extends PartialType(createItemDto) {}
