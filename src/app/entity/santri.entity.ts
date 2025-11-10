@@ -28,6 +28,9 @@ export class Santri {
   @Column()
   kelas: string;
 
+  @Column()
+  nisn: string;
+
   @Column({ type: 'int', default: 0 })
   saldo: number;
 
@@ -49,6 +52,9 @@ export class Santri {
   @OneToOne(() => Kartu, (kartu) => kartu.santri)
   kartu: Kartu;
 
-  @ManyToOne(() => Parent, (parent) => parent.santri, { onDelete: 'SET NULL' , nullable: true })
+  @ManyToOne(() => Parent, (parent) => parent.santri, {
+    onDelete: 'SET NULL',
+    nullable: true,
+  })
   parent: Parent;
 }

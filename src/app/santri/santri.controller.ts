@@ -46,6 +46,11 @@ export class SantriController {
     return this.santriService.totalSaldoSantri();
   }
 
+  @Get('saldo/:id')
+  async getSaldoById(@Param('id', ParseIntPipe) id: number) {
+    return this.santriService.getSaldoById(id);
+  }
+
   @Get('saldo-max')
   async getSaldoTerbanyakSantri() {
     return this.santriService.saldoTerbanyakSantri();

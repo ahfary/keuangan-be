@@ -1,11 +1,12 @@
-import { Global, Module } from '@nestjs/common';
-import { WinpayController } from './winpay.controller';
-import { WinpayService } from './winpay.service';
+// import { Module } from '@nestjs/common';
+// import { ConfigModule } from '@nestjs/config';
+// import { HttpModule } from '@nestjs/axios';
+// import { WinpayService } from './winpay.service';
+// import { WinpayController } from './winpay.controller';
 
-@Global()
-@Module({
-  imports: [],
-  controllers: [WinpayController],
-  providers: [WinpayService]
-})
-export class WinpayModule {}
+// @Module({
+//   imports: [ConfigModule.forRoot({ isGlobal: true }), HttpModule],
+//   providers: [WinpayService],
+//   controllers: [WinpayController],
+// })
+// export class WinpayModule {}

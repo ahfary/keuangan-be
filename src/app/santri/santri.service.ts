@@ -218,6 +218,14 @@ export class SantriService extends BaseResponse {
     return this.success('Bulk delete successfully', deleted);
   } 
 
+  async getSaldoById(id:any): Promise<ResponseSuccess>{
+    const saldo = await this.santri.findOne({
+      where : id,
+      select: ['id', 'saldo'],
+    })
+    return this.success('Success', saldo);
+  }
+
   async totalSaldoSantri(): Promise<ResponseSuccess> {
     const result = await this.santri
       .createQueryBuilder('santri')

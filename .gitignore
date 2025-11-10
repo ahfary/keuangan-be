@@ -1,6 +1,9 @@
 #Custom
 # /src/app/midtrans
+/src/app/winpay
 /prisma
+/winpay/winpay-private.pem
+/winpay/winpay-public.pem
 
 # compiled output
 /dist
