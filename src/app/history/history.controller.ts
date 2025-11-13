@@ -40,4 +40,14 @@ export class HistoryController {
   async getHistoryById(@Param('id', ParseIntPipe) id: number) {
     return this.historyService.getHistoryById(id);
   }
+
+  @Get('total-jajan/:id')
+  async totalJajanBySantriId(@Param('id', ParseIntPipe) id: number) {
+    return this.historyService.totalJajanBySantriId(id);
+  }
+
+  @Get('count-transaksi/:id')
+  async countTransaksiBySantriId(@Param('id', ParseIntPipe) id: number) {
+    return this.historyService.countTransaksiBySantriId(id);
+  }
 }

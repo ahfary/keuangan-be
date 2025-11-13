@@ -11,12 +11,11 @@ import { HistoryModule } from './app/history/history.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { KategoriModule } from './app/kategori/kategori.module';
 import { TransaksiModule } from './app/transaksi/transaksi.module';
-// import { MidtransModule } from './app/midtrans/midtrans.module';
 import { KartuModule } from './app/kartu/kartu.module';
 import { WebsocketModule } from './app/websocket/websocket.module';
 import { MailModule } from './app/mail/mail.module';
 import { MidtransModule } from './app/midtrans/midtrans.module';
-// import { WinpayModule } from './app/winpay/winpay.module';
+import { WinpayModule } from './app/winpay/winpay.module';
 import { TagihanModule } from './app/tagihan/tagihan.module';
 
 @Global()
@@ -42,7 +41,7 @@ import { TagihanModule } from './app/tagihan/tagihan.module';
     KartuModule,
     WebsocketModule,
     MailModule,
-    // WinpayModule,
+    WinpayModule,
     TagihanModule,
   ],
   controllers: [AppController],

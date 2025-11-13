@@ -105,4 +105,9 @@ export class SantriController {
     const parsedIds = ids.split(',').map(Number);
     return this.santriService.deleteBulkWalsan(parsedIds);
   }
+  
+  @Get('tagihan/:nisn')
+  async getTagihan(@Param('nisn') id: any) {
+    return this.santriService.getTagihan(id);
+  }
 }

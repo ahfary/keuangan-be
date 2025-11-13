@@ -31,4 +31,5 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
     console.log("Notif masuk:", data);
     this.server.emit("notification", data); // broadcast ke semua client
   }
+  
 }

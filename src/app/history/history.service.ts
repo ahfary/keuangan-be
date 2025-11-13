@@ -85,6 +85,48 @@ export class HistoryService extends BaseResponse {
     return this.success('History retrieved successfully', history);
   }
 
+  async totalJajanBySantriId(id: number): Promise<ResponseSuccess> {
+    // pastikan santri ada
+    const santri = await this.santriRepository.findOne({ where: { id } });
+    if (!santri)
+      throw new NotFoundException(`Santri dengan ID ${id} tidak ditemukan.`);
+
+    // sum totalAmount dari table history
+    const raw = await this.historyRepository
+      .createQueryBuilder('history')
+      .select('SUM(history.totalAmount)', 'totalJajan')
+      .where('history.santriId = :id', { id })
+      .getRawOne<{ totalJajan: string }>();
+
+    const total = Number(raw?.totalJajan ?? 0);
+
+    return this.success(
+      `Total jajan santri dengan ID ${id} berhasil dihitung.`,
+      total,
+    );
+  }
+
+  async countTransaksiBySantriId(id: number): Promise<ResponseSuccess> {
+    // pastikan santri ada
+    const santri = await this.santriRepository.findOne({ where: { id } });
+    if (!santri)
+      throw new NotFoundException(`Santri dengan ID ${id} tidak ditemukan.`);
+
+    // sum totalAmount dari table history
+    const raw = await this.historyRepository
+      .createQueryBuilder('history')
+      .select('COUNT(history.id)', 'totalTransaksi')
+      .where('history.santriId = :id', { id })
+      .getRawOne<{ totalTransaksi: string }>();
+
+    const total = Number(raw?.totalTransaksi ?? 0);
+
+    return this.success(
+      `Total transaksi santri dengan ID ${id} berhasil dihitung.`,
+      total,
+    );
+  }
+
   async checkout(dto: CheckoutDto) {
     const { santriId, items } = dto;
 
@@ -230,19 +272,16 @@ export class HistoryService extends BaseResponse {
       );
       await manager.save(historyItems);
 
-      return this.success(
-        pesanResponse,
-        {
-          history: newHistory,
-          totalAmount,
-          items: historyItems.map((h) => ({
-            itemId: h.itemId,
-            quantity: h.quantity,
-            priceAtPurchase: h.priceAtPurchase,
-            subtotal: h.priceAtPurchase * h.quantity,
-          })),
-        },
-      );
-    });
-  }
+      return this.success(pesanResponse, {
+        history: newHistory,
+        totalAmount,
+        items: historyItems.map((h) => ({
+          itemId: h.itemId,
+          quantity: h.quantity,
+          priceAtPurchase: h.priceAtPurchase,
+          subtotal: h.priceAtPurchase * h.quantity,
+        })),
+      });
+    });
+  }
 }

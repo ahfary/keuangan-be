@@ -9,6 +9,7 @@ import { DataSource, In, Repository } from 'typeorm';
 import { Kartu } from '../entity/kartu_santri.entity';
 import { Parent } from '../entity/parent.entity';
 import { role } from '../entity/user.entity';
+import axios from 'axios';
 
 @Injectable()
 export class SantriService extends BaseResponse {
@@ -25,11 +26,11 @@ export class SantriService extends BaseResponse {
   async getAllSantri(): Promise<ResponseSuccess> {
     const santri = await this.santri.find({
       relations: ['kartu', 'parent'],
-      select : {
-        parent : {
-          id : true
-        }
-      }
+      select: {
+        parent: {
+          id: true,
+        },
+      },
     });
     return this.success('Success', santri);
   }
@@ -39,40 +40,40 @@ export class SantriService extends BaseResponse {
   }
 
   async findAllWalsan(): Promise<ResponseSuccess> {
-  const parents = await this.parent.find({
-    relations: ['user', 'santri'],
-  });
+    const parents = await this.parent.find({
+      relations: ['user', 'santri'],
+    });
 
-  if (!parents || parents.length === 0) {
-    return this.success('Data walsan kosong', []);
+    if (!parents || parents.length === 0) {
+      return this.success('Data walsan kosong', []);
+    }
+
+    const walsanParents = parents.filter(
+      (p) => p.user && p.user.role === role.WALISANTRI,
+    );
+
+    const responseData = walsanParents
+      .map((parent) => {
+        if (!parent.user) return null;
+
+        // buang password dengan destructuring
+        const { password, ...safeUser } = parent.user;
+
+        return {
+          id: safeUser.id,
+          email: safeUser.email,
+          name: safeUser.name,
+          parent: {
+            id: parent.id,
+            name: parent.name,
+            santri: parent.santri,
+          },
+        };
+      })
+      .filter(Boolean); // filter null kalau ada parent.user yang undefined
+
+    return this.success('Berhasil mengambil semua data walsan', responseData);
   }
-
-  const walsanParents = parents.filter(
-    p => p.user && p.user.role === role.WALISANTRI,
-  );
-
-  const responseData = walsanParents.map(parent => {
-    if (!parent.user) return null;
-
-    // buang password dengan destructuring
-    const { password, ...safeUser } = parent.user;
-
-    return {
-      id: safeUser.id,
-      email: safeUser.email,
-      name: safeUser.name,
-      parent: {
-        id: parent.id,
-        name: parent.name,
-        santri: parent.santri,
-      },
-    };
-  }).filter(Boolean); // filter null kalau ada parent.user yang undefined
-
-  return this.success('Berhasil mengambil semua data walsan', responseData);
-}
-
-
 
   async getSantriDetail(id: number) {
     const detail = await this.santri.findOne({
@@ -216,15 +217,17 @@ export class SantriService extends BaseResponse {
       throw new HttpException('Santri Tidak Ditemukan', 404);
     }
     return this.success('Bulk delete successfully', deleted);
-  } 
+  }
 
-  async getSaldoById(id:any): Promise<ResponseSuccess>{
+  async getSaldoById(id: any): Promise<ResponseSuccess> {
     const saldo = await this.santri.findOne({
-      where : id,
-      select: ['id', 'saldo'],
-    })
+      where: id,
+      select: ['id', 'saldo', 'hutang','name'],
+    });
     return this.success('Success', saldo);
   }
+
+  
 
   async totalSaldoSantri(): Promise<ResponseSuccess> {
     const result = await this.santri
@@ -275,5 +278,11 @@ export class SantriService extends BaseResponse {
       'Santri dengan saldo terbesar berhasil ditemukan.',
       santri,
     );
+  }
+
+  async getTagihan(nisn:any){
+    axios.get(`http://lap-uang-be.vercel.app/arrears/student/${nisn}`).then((res) => {
+      return this.success('Berhasil mendapatkan tagihan santri', res.data);
+    })
   }
 }
