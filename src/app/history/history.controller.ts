@@ -46,8 +46,18 @@ export class HistoryController {
     return this.historyService.totalJajanBySantriId(id);
   }
 
-  @Get('count-transaksi/:id')
-  async countTransaksiBySantriId(@Param('id', ParseIntPipe) id: number) {
-    return this.historyService.countTransaksiBySantriId(id);
+  @Get('total-hutang/:id')
+  async totalhutangBySantriId(@Param('id', ParseIntPipe) id: number) {
+    return this.historyService.totalHutangBySantriId(id);
   }
+
+  // @Get('total-jajan/:id')
+  // async totalJajanBySantriId(@Param('id', ParseIntPipe) id: number) {
+  //   return this.historyService.totalJajanBySantriId(id);
+  // }
+
+  // @Get('count-transaksi/:id')
+  // async countTransaksiBySantriId(@Param('id', ParseIntPipe) id: number) {
+  //   return this.historyService.countTransaksiBySantriId(id);
+  // }
 }

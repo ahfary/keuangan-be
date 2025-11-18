@@ -86,46 +86,57 @@ export class HistoryService extends BaseResponse {
   }
 
   async totalJajanBySantriId(id: number): Promise<ResponseSuccess> {
-    // pastikan santri ada
-    const santri = await this.santriRepository.findOne({ where: { id } });
-    if (!santri)
-      throw new NotFoundException(`Santri dengan ID ${id} tidak ditemukan.`);
+  // pastikan santri ada
+  const santri = await this.santriRepository.findOne({ where: { id } });
+  if (!santri)
+    throw new NotFoundException(`Santri dengan ID ${id} tidak ditemukan.`);
 
-    // sum totalAmount dari table history
-    const raw = await this.historyRepository
-      .createQueryBuilder('history')
-      .select('SUM(history.totalAmount)', 'totalJajan')
-      .where('history.santriId = :id', { id })
-      .getRawOne<{ totalJajan: string }>();
+  // query total jajan dan total transaksi sekaligus
+  const raw = await this.historyRepository
+    .createQueryBuilder('history')
+    .select('SUM(history.totalAmount)', 'totalJajan')
+    .addSelect('COUNT(history.id)', 'totalTransaksi')
+    .where('history.santriId = :id', { id })
+    .getRawOne<{ totalJajan: string; totalTransaksi: string }>();
 
-    const total = Number(raw?.totalJajan ?? 0);
+  const result = {
+    totalTransaksi: Number(raw?.totalTransaksi ?? 0),
+    totalJajan: Number(raw?.totalJajan ?? 0),
+  };
 
-    return this.success(
-      `Total jajan santri dengan ID ${id} berhasil dihitung.`,
-      total,
-    );
-  }
+  return this.success(
+    'Berhasil menghitung total jajan dan total transaksi santri.',
+    result,
+  );
+}
 
-  async countTransaksiBySantriId(id: number): Promise<ResponseSuccess> {
-    // pastikan santri ada
-    const santri = await this.santriRepository.findOne({ where: { id } });
-    if (!santri)
-      throw new NotFoundException(`Santri dengan ID ${id} tidak ditemukan.`);
+async totalHutangBySantriId(id: number): Promise<ResponseSuccess> {
+  // pastikan santri ada
+  const santri = await this.santriRepository.findOne({ where: { id } });
+  if (!santri)
+    throw new NotFoundException(`Santri dengan ID ${id} tidak ditemukan.`);
 
-    // sum totalAmount dari table history
-    const raw = await this.historyRepository
-      .createQueryBuilder('history')
-      .select('COUNT(history.id)', 'totalTransaksi')
-      .where('history.santriId = :id', { id })
-      .getRawOne<{ totalTransaksi: string }>();
+  // query total hutang dan jumlah transaksi hutang
+  const raw = await this.historyRepository
+    .createQueryBuilder('history')
+    .select('SUM(history.totalAmount)', 'totalHutang')
+    .addSelect('COUNT(history.id)', 'jumlahTransaksiHutang')
+    .where('history.santriId = :id', { id })
+    .andWhere('history.status = :status', { status: status.HUTANG })
+    .getRawOne<{ totalHutang: string; jumlahTransaksiHutang: string }>();
 
-    const total = Number(raw?.totalTransaksi ?? 0);
+  const result = {
+    totalHutang: Number(raw?.totalHutang ?? 0),
+    jumlahTransaksiHutang: Number(raw?.jumlahTransaksiHutang ?? 0),
+  };
 
-    return this.success(
-      `Total transaksi santri dengan ID ${id} berhasil dihitung.`,
-      total,
-    );
-  }
+  return this.success(
+    `Berhasil menghitung total hutang dan jumlah transaksi hutang santri.`,
+    result,
+  );
+}
+
+
 
   async checkout(dto: CheckoutDto) {
     const { santriId, items } = dto;

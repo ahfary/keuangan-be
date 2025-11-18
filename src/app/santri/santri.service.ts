@@ -10,6 +10,7 @@ import { Kartu } from '../entity/kartu_santri.entity';
 import { Parent } from '../entity/parent.entity';
 import { role } from '../entity/user.entity';
 import axios from 'axios';
+import { History } from '../entity/history.entity';
 
 @Injectable()
 export class SantriService extends BaseResponse {
@@ -18,6 +19,7 @@ export class SantriService extends BaseResponse {
     @InjectRepository(Santri) private readonly santri: Repository<Santri>,
     @InjectRepository(Kartu) private readonly kartu: Repository<Kartu>,
     @InjectRepository(Parent) private readonly parent: Repository<Parent>,
+    @InjectRepository(History) private readonly history: Repository<History>,
     private readonly dataSource: DataSource,
   ) {
     super();
@@ -222,12 +224,10 @@ export class SantriService extends BaseResponse {
   async getSaldoById(id: any): Promise<ResponseSuccess> {
     const saldo = await this.santri.findOne({
       where: id,
-      select: ['id', 'saldo', 'hutang','name'],
+      select: ['id', 'saldo', 'hutang', 'name'],
     });
     return this.success('Success', saldo);
   }
-
-  
 
   async totalSaldoSantri(): Promise<ResponseSuccess> {
     const result = await this.santri
@@ -279,10 +279,97 @@ export class SantriService extends BaseResponse {
       santri,
     );
   }
+  // async profileSantri(id: number): Promise<ResponseSuccess> {
+  //   // cek santri
+  //   const santri = await this.santri.findOne({ where: { id } });
+  //   if (!santri)
+  //     throw new NotFoundException(`Santri dengan ID ${id} tidak ditemukan.`);
 
-  async getTagihan(nisn:any){
-    axios.get(`http://lap-uang-be.vercel.app/arrears/student/${nisn}`).then((res) => {
+  //   const raw = await this.history
+  //     .createQueryBuilder('history')
+  //     .select(
+  //       `
+  //     COALESCE(
+  //       SUM(
+  //         CASE
+  //           WHEN history.status = :lunas THEN history.totalAmount
+  //           ELSE 0
+  //         END
+  //       ), 0
+  //     )`,
+  //       'saldo',
+  //     )
+  //     .addSelect(
+  //       `
+  //     COALESCE(
+  //       SUM(
+  //         CASE
+  //           WHEN history.status = :hutang THEN history.totalAmount
+  //           ELSE 0
+  //         END
+  //       ), 0
+  //     )`,
+  //       'hutang',
+  //     )
+  //     .addSelect('COUNT(history.id)', 'jumlahTransaksi')
+  //     .where('history.santriId = :id', { id })
+  //     .setParameters({
+  //       lunas: 'LUNAS',
+  //       hutang: 'HUTANG',
+  //     })
+  //     .getRawOne<{
+  //       saldo: string;
+  //       hutang: string;
+  //       jumlahTransaksi: string;
+  //     }>();
+
+  //   const result = {
+  //     saldo: Number(raw?.saldo ?? 0),
+  //     jumlahTransaksi: Number(raw?.jumlahTransaksi ?? 0),
+  //     hutang: Number(raw?.hutang ?? 0),
+  //   };
+
+  //   return this.success(
+  //     `Summary keuangan santri dengan ID ${id} berhasil dihitung.`,
+  //     result,
+  //   );
+  // }
+
+  async profileSantri(id: number): Promise<ResponseSuccess> {
+    // Ambil data santri
+    const santri = await this.santri.findOne({
+      where: { id },
+      select: ['id', 'saldo', 'hutang'],
+    });
+
+    if (!santri) {
+      throw new NotFoundException(`Santri dengan ID ${id} tidak ditemukan.`);
+    }
+
+    const totalTransaksi = await this.history.count({
+      where: { santriId: id },
+    });
+
+    const result = {
+      ...santri,
+      totalTransaksi,
+    };
+
+    return this.success(
+      `Profile santri dengan ID ${id} berhasil diambil.`,
+      result,
+    );
+  }
+
+  async getTagihan(nisn: any) {
+  return axios
+    .get(`https://lap-uang-fawwaz.vercel.app/payments/tagihan/${nisn}`)
+    .then((res) => {
       return this.success('Berhasil mendapatkan tagihan santri', res.data);
     })
-  }
+    .catch((err) => {
+      return err
+    });
+}
+
 }
