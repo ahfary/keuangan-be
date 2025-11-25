@@ -16,8 +16,8 @@ export class TransaksiService extends BaseResponse {
   ) {
     super();
   }
-  async topUpSantri(id: number, jumlah: number) {
-  const santri = await this.santri.findOne({ where: { id } });
+  async topUpSantri(nisn: string, jumlah: number ) {
+  const santri = await this.santri.findOne({ where: { nisn : nisn } });
   if (!santri) throw new HttpException('Santri tidak ditemukan', 404);
 
   if (santri.hutang > 0) {

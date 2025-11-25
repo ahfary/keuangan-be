@@ -363,7 +363,7 @@ export class SantriService extends BaseResponse {
 
   async getTagihan(nisn: any) {
   return axios
-    .get(`https://lap-uang-fawwaz.vercel.app/payments/tagihan/${nisn}`)
+    .get(`https://lap-uang-be.vercel.app/payments/tagihan/sakusaku/${nisn}/mqmaju123`)
     .then((res) => {
       return this.success('Berhasil mendapatkan tagihan santri', res.data);
     })

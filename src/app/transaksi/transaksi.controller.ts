@@ -5,10 +5,10 @@ import { TransaksiService } from './transaksi.service';
 export class TransaksiController {
   constructor(private readonly transaksiService: TransaksiService) {}
 
-  @Post('top-up/:id')
-  async topUpSantri(@Param('id') id: number, @Body('jumlah') jumlah: number) {
-    return await this.transaksiService.topUpSantri(id, jumlah);
-  }
+  // @Post('top-up/:id')
+  // async topUpSantri(@Param('id') id: number, @Body('jumlah') jumlah: number) {
+  //   return await this.transaksiService.topUpSantri(id, jumlah);
+  // }
 
   @Post('deduct/:id')
   async deductSantri(@Param('id') id: number, @Body('jumlah') jumlah: number) {

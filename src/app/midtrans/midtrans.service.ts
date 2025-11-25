@@ -143,7 +143,7 @@ export class MidtransService {
     const jumlah = parseInt(notification.gross_amount, 10);
     
     // 👉 Panggil service transaksi
-    await this.transaksiService.topUpSantri(santriId, jumlah);
+    // await this.transaksiService.topUpSantri(santriId, jumlah);
     console.log(`✅ TopUp berhasil untuk santriId ${santriId} sejumlah ${jumlah}`);
   }
 

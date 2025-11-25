@@ -14,9 +14,7 @@ import { TransaksiModule } from './app/transaksi/transaksi.module';
 import { KartuModule } from './app/kartu/kartu.module';
 import { WebsocketModule } from './app/websocket/websocket.module';
 import { MailModule } from './app/mail/mail.module';
-import { MidtransModule } from './app/midtrans/midtrans.module';
 import { WinpayModule } from './app/winpay/winpay.module';
-import { TagihanModule } from './app/tagihan/tagihan.module';
 
 @Global()
 @Module({
@@ -37,12 +35,11 @@ import { TagihanModule } from './app/tagihan/tagihan.module';
     HistoryModule,
     KategoriModule,
     TransaksiModule,
-    MidtransModule,
+   
     KartuModule,
     WebsocketModule,
     MailModule,
     WinpayModule,
-    TagihanModule,
   ],
   controllers: [AppController],
   providers: [AppService],
