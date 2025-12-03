@@ -17,13 +17,13 @@ export class WinpayHistory {
     @Column({nullable : true})
     nisn:string
 
-    @Column({nullable : true})
-    bulan:string
+    @Column({nullable : true, type: 'json'})
+    bulan:string[]
 
     @Column({nullable : true})
     tahun:string
 
-    @Column({nullable : true})
+    @Column({nullable : true, })
     jenis:string
 
     @Column({type:'text', nullable :true})

@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsIn,
   IsNotEmpty,
   IsOptional,
@@ -44,11 +45,13 @@ export class CreateVaDto {
   @IsNotEmpty()
   nisn:string
 
+  // @IsArray()
   @IsString()
   @IsNotEmpty()
   jenis:string
 
-  @IsString()
+  @IsArray()
+  @IsString({ each: true })
   @IsNotEmpty()
   bulan:string
 
@@ -96,6 +99,30 @@ export class InquiryVaDto {
   @ValidateNested()
   @Type(() => AdditionalInfoInquiryDto)
   additionalInfo!: AdditionalInfoInquiryDto;
+}
+
+class AdditionalInfoInquiryStatusDto {
+  @IsString()
+  @IsNotEmpty()
+  contractId!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  channel: string;
+
+  @IsString()
+  @IsNotEmpty()
+  trxId!: string;
+}
+
+export class InquiryStatus{
+  @IsString()
+  @IsNotEmpty()
+  virtualAccountNo!: string;
+
+  @ValidateNested()
+  @Type(() => AdditionalInfoInquiryStatusDto)
+  additionalInfo!: AdditionalInfoInquiryStatusDto;
 }
 
 class PaidAmountDto {

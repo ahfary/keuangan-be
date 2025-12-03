@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { WinpayService } from './winpay.service';
-import { CreateVaDto, InquiryVaDto } from './winpay.dto';
+import { CreateVaDto, InquiryStatus, InquiryVaDto } from './winpay.dto';
 
 @Controller('payments/winpay')
 export class WinpayController {
@@ -20,5 +20,10 @@ export class WinpayController {
   @Post('callback')
   async callback(@Body() dto: any) {
     return this.winpay.callback(dto);
+  }
+
+  @Post('va/inquiry-status')
+  async inquiryStatus(@Body() dto: InquiryStatus) {
+    return this.winpay.inquiryVaStatus(dto);
   }
 }

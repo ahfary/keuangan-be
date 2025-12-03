@@ -6,8 +6,8 @@ export class HistoryTransaksi {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Santri, (santri) => santri.history, { eager: true })
-  santri: Santri;
+  @ManyToOne(() => Santri, (santri) => santri.history, { eager: true, onDelete: 'CASCADE' , nullable: true})
+  santri: Santri | null;
 
   @Column()
   jumlah: number;
