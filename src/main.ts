@@ -17,7 +17,7 @@ async function bootstrap() {
     })
   )
   app.enableCors({
-    origin: ['*', "http://localhost:3000", 'https://sakusantri.vercel.app'], // Izinkan semua domain (baik untuk pengembangan)
+    origin: ['*', "http://localhost:3000", 'https://sakusantri.vercel.app', 'https://sakusantri.ahmadfaqihabqory.my.id/'], // Izinkan semua domain (baik untuk pengembangan)
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });

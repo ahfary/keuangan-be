@@ -17,7 +17,7 @@ export class WinpayController {
     return this.winpay.inquiryVa(dto);
   }
 
-  @Post('callback')
+  @Post('callback/v1.0/transfer-va/payment')
   async callback(@Body() dto: any) {
     return this.winpay.callback(dto);
   }

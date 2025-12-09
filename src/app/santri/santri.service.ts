@@ -190,19 +190,6 @@ export class SantriService extends BaseResponse {
     return this.success('Santri deleted successfully', santri);
   }
 
-  // async deleteBulk(array: number[]): Promise<ResponseSuccess> {
-  //   if (!array.length) {
-  //     throw new HttpException('array must be provided in query', 400);
-  //   }
-
-  //   const existingSantri = await this.santri.findBy({ id: In(array) });
-  //   if (existingSantri.length !== array.length) {
-  //     throw new HttpException('Some Santri not found', 404);
-  //   }
-
-  //   await this.santri.delete(array);
-  //   return this.success('Bulk delete successfully', array);
-  // }
   async deleteBulk(array: number[]): Promise<ResponseSuccess> {
     const deleted = await this.santri.delete(array);
 
@@ -237,10 +224,6 @@ export class SantriService extends BaseResponse {
 
     const totalSaldo = parseInt(result?.totalSaldo ?? '0', 10);
 
-    if (totalSaldo === 0) {
-      throw new NotFoundException('Tidak ada saldo santri yang ditemukan.');
-    }
-
     return this.success(
       'Total saldo semua santri berhasil dihitung.',
       totalSaldo,
@@ -255,10 +238,6 @@ export class SantriService extends BaseResponse {
 
     const totalHutang = parseInt(result?.totalHutang ?? '0', 10);
 
-    if (totalHutang === 0) {
-      throw new NotFoundException('Tidak ada hutang santri yang ditemukan.');
-    }
-
     return this.success(
       'Total hutang semua santri berhasil dihitung.',
       totalHutang,
@@ -270,13 +249,9 @@ export class SantriService extends BaseResponse {
       order: { saldo: 'DESC' },
     });
 
-    if (!santri) {
-      throw new NotFoundException('Tidak ada santri yang ditemukan.');
-    }
-
     return this.success(
       'Santri dengan saldo terbesar berhasil ditemukan.',
-      santri,
+      santri || [],
     );
   }
   // async profileSantri(id: number): Promise<ResponseSuccess> {
@@ -362,14 +337,15 @@ export class SantriService extends BaseResponse {
   }
 
   async getTagihan(nisn: any) {
-  return axios
-    .get(`https://lap-uang-be.vercel.app/payments/tagihan/sakusaku/${nisn}/mqmaju123`)
-    .then((res) => {
-      return this.success('Berhasil mendapatkan tagihan santri', res.data);
-    })
-    .catch((err) => {
-      return err
-    });
-}
-
+    return axios
+      .get(
+        `https://lap-uang-be.vercel.app/payments/tagihan/sakusaku/${nisn}/mqmaju123`,
+      )
+      .then((res) => {
+        return this.success('Berhasil mendapatkan tagihan santri', res.data);
+      })
+      .catch((err) => {
+        return err;
+      });
+  }
 }

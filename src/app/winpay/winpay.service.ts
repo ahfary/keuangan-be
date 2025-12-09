@@ -339,22 +339,27 @@ export class WinpayService extends BaseResponse {
       'CHANNEL-ID': 'WEB',
     };
 
+
     // return dto
     try {
       const cust: any = await this.winpay.findOne({
         where: {
           customerNo: dto.customerNo,
         },
-      });
+      });   
 
       // Jalankan proses setelah response dikirim
       setImmediate(async () => {
         try {
           if (cust?.jenis === 'uangsaku') {
+            await this.winpay.update(cust.id, {
+              status: status.SUCCESS,
+            });
             await this.transaksi.topUpSantri(
               cust.nisn,
               Number(dto.paidAmount.value),
             );
+            console.log('success')
           } else {
             const data = {
               jenis: cust?.jenis,
@@ -387,64 +392,63 @@ export class WinpayService extends BaseResponse {
 
       return { channel, error: e.response?.data || e.message };
     }
-
   }
-  async callback2(){
-    const path = "/sandbox_prod/url_listener.php/v1.0/transfer-va/payment";
-const timestamp = "2024-01-11T08:57:55+07:00"; //ambil dari header X-Timestamp
-const signature =
-  "Zng8tJgtK2lPd8CP89KyO1OGEKXn1tFfXevTGIn5IhHYDpobp7+4uvuczP5HwldghO5mzkh03v6wnggoZev8M2RyKegbrRaIr66KbAgr6sfKfH9MfkXFcEKpF/am8QMr4oExKPdYTdGEr6pq6m1CzUjFQsyu9z6JuMGrjXrxFXU="; //ambil dari header X-Signature
-const httpMethod = "POST";
-const partnerId = "170041"; //ambil dari header X-Partner-Id
-const body = {
-  partnerServiceId: "    9042",
-  customerNo: "00000009",
-  virtualAccountNo: "    904200000009",
-  virtualAccountName: "WINPAY - fiandi",
-  trxId: "INV-000000023220",
-  paymentRequestId: "45539",
-  paidAmount: {
-    value: "10000.00",
-    currency: "IDR",
-  },
-  trxDateTime: "2024-01-11T08:57:55+07:00",
-  additionalInfo: {
-    contractId: "si1cd5671d-2ffe-4cca-aff0-b8ee9bc1c041",
-    channel: "BSI",
-  },
-};
-const payload = JSON.stringify(body);
-const stringToSignArr = [
-  httpMethod,
-  path,
-  crypto.createHash("sha256").update(payload).digest("hex"),
-  timestamp,
-];
-const stringToSign = stringToSignArr.join(":");
-try {
-  const publicKey = fs.readFileSync("publicKey.pem");
-  const verify = crypto
-    .createVerify("sha256")
-    .update(stringToSign)
-    .verify(publicKey, Buffer.from(signature, "base64"));
-  if (!verify) {
-    const response = {
-      message: "Cannot verify signature",
+  async signatureCallback() {
+    const path = '/sandbox_prod/url_listener.php/v1.0/transfer-va/payment';
+    const timestamp = '2024-01-11T08:57:55+07:00'; //ambil dari header X-Timestamp
+    const signature =
+      'Zng8tJgtK2lPd8CP89KyO1OGEKXn1tFfXevTGIn5IhHYDpobp7+4uvuczP5HwldghO5mzkh03v6wnggoZev8M2RyKegbrRaIr66KbAgr6sfKfH9MfkXFcEKpF/am8QMr4oExKPdYTdGEr6pq6m1CzUjFQsyu9z6JuMGrjXrxFXU='; //ambil dari header X-Signature
+    const httpMethod = 'POST';
+    const partnerId = '170041'; //ambil dari header X-Partner-Id
+    const body = {
+      partnerServiceId: '    9042',
+      customerNo: '00000009',
+      virtualAccountNo: '    904200000009',
+      virtualAccountName: 'WINPAY - fiandi',
+      trxId: 'INV-000000023220',
+      paymentRequestId: '45539',
+      paidAmount: {
+        value: '10000.00',
+        currency: 'IDR',
+      },
+      trxDateTime: '2024-01-11T08:57:55+07:00',
+      additionalInfo: {
+        contractId: 'si1cd5671d-2ffe-4cca-aff0-b8ee9bc1c041',
+        channel: 'BSI',
+      },
     };
-    console.log(response);
-  } else {
-    const response = {
-      responseCode: "2002500",
-      responseMessage: "Successful",
-    };
-    console.log(response);
-  }
-} catch (error) {
-  const response = {
-    message: "Invalid signature {" + error.message + "}",
-  };
-  console.log(response);
-}
+    const payload = JSON.stringify(body);
+    const stringToSignArr = [
+      httpMethod,
+      path,
+      crypto.createHash('sha256').update(payload).digest('hex'),
+      timestamp,
+    ];
+    const stringToSign = stringToSignArr.join(':');
+    try {
+      const publicKey = fs.readFileSync('publicKey.pem');
+      const verify = crypto
+        .createVerify('sha256')
+        .update(stringToSign)
+        .verify(publicKey, Buffer.from(signature, 'base64'));
+      if (!verify) {
+        const response = {
+          message: 'Cannot verify signature',
+        };
+        console.log(response);
+      } else {
+        const response = {
+          responseCode: '2002500',
+          responseMessage: 'Successful',
+        };
+        console.log(response);
+      }
+    } catch (error) {
+      const response = {
+        message: 'Invalid signature {' + error.message + '}',
+      };
+      console.log(response);
+    }
   }
 
   async getWinpayHistoryByNisn(nisn: string): Promise<ResponseSuccess> {

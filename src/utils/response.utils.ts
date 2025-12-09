@@ -5,7 +5,7 @@ class BaseResponse {
     return {
       status: 'success',
       msg: msg,
-      data: data || {},
+      data: data ?? {},
     };
   }
 }
