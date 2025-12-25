@@ -16,8 +16,35 @@ export class TransaksiService extends BaseResponse {
   ) {
     super();
   }
-  async topUpSantri(nisn: string, jumlah: number ) {
+  async topUpSantriWinpay(nisn: string, jumlah: number ) {
   const santri = await this.santri.findOne({ where: { nisn : nisn } });
+  if (!santri) throw new HttpException('Santri tidak ditemukan', 404);
+
+  if (santri.hutang > 0) {
+    if (jumlah >= santri.hutang) {
+      const sisa = jumlah - santri.hutang;
+      santri.hutang = 0;
+      santri.saldo += sisa;
+    } else {
+      santri.hutang -= jumlah;
+    }
+  } else {
+    santri.saldo += jumlah;
+  }
+
+  await this.santri.save(santri);
+
+  // Simpan history (simple)
+  const history = this.history.create({
+    santri,
+    jumlah,
+  });
+  await this.history.save(history);
+
+  return this.success('Top up berhasil', santri);
+}
+  async topUpSantri(id: number, jumlah: number ) {
+  const santri = await this.santri.findOne({ where: { id : id } });
   if (!santri) throw new HttpException('Santri tidak ditemukan', 404);
 
   if (santri.hutang > 0) {

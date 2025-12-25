@@ -47,16 +47,21 @@ export class CreateVaDto {
 
   // @IsArray()
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   jenis:string
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  other:string
 
   @IsArray()
   @IsString({ each: true })
-  @IsNotEmpty()
+  @IsOptional()
   bulan:string
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   tahun:string
 
   @IsString()

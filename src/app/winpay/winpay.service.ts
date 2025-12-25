@@ -99,7 +99,7 @@ export class WinpayService extends BaseResponse {
         },
       };
       const body = payload;
-      console.log(body);
+      // console.log(body);
       const hashedBody = crypto
         .createHash('sha256')
         .update(JSON.stringify(body, null, 0))
@@ -339,27 +339,28 @@ export class WinpayService extends BaseResponse {
       'CHANNEL-ID': 'WEB',
     };
 
-
     // return dto
     try {
       const cust: any = await this.winpay.findOne({
         where: {
           customerNo: dto.customerNo,
         },
-      });   
+      });
+
+      console.log(cust);
 
       // Jalankan proses setelah response dikirim
       setImmediate(async () => {
         try {
           if (cust?.jenis === 'uangsaku') {
-            await this.winpay.update(cust.id, {
-              status: status.SUCCESS,
-            });
-            await this.transaksi.topUpSantri(
+            await this.transaksi.topUpSantriWinpay(
               cust.nisn,
               Number(dto.paidAmount.value),
             );
-            console.log('success')
+            await this.winpay.update(cust.id, {
+              status: status.SUCCESS,
+            });
+            console.log('success');
           } else {
             const data = {
               jenis: cust?.jenis,

@@ -1,0 +1,1192 @@
+{
+	"info": {
+		"_postman_id": "c7d2b2cc-dc8e-427f-97ea-b39fd846773b",
+		"name": "Saku Santri",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "37564540"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"testing2\",\r\n    \"email\" : \"testing2@gmail.com\",\r\n    \"password\" : \"12345678\",\r\n    \"role\" : \"Kasir\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriUrl}}/auth/register"
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Walsan",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "{{sakuSantriUrl}}/auth/generate-walsan/3"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\" : \"walsan_Danif6781@smkmq.com\",\r\n    \"password\" : \"smkmqbisa\",\r\n    \"role\" : \"Walisantri\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriVercel}}/auth/login"
+					},
+					"response": []
+				},
+				{
+					"name": "Login Walsan",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"WalsanRahsya\",\r\n    \"password\" : \"smkmqbisa\",\r\n    \"role\" : \"Walisantri\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriUrl}}/auth/login-walsan"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwidXNlcm5hbWUiOiJ0ZXN0aW5nIiwiZW1haWwiOiJ0ZXN0aW5nQGdtYWlsLmNvbSIsInJvbGUiOiJBZG1pbiIsImlhdCI6MTc1Nzk5OTU1MSwiZXhwIjoxNzU4MDg1OTUxfQ.s70YPEvcsOxqCu2hrc5jdzNMcY3TiOeglJQfepgq7V4",
+								"type": "text"
+							},
+							{
+								"key": "id",
+								"value": "6",
+								"type": "text"
+							}
+						],
+						"url": "{{sakuSantriUrl}}/auth/refresh-token"
+					},
+					"response": []
+				},
+				{
+					"name": "Profile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwidXNlcm5hbWUiOiJ0ZXN0aW5nIiwiZW1haWwiOiJ0ZXN0aW5nQGdtYWlsLmNvbSIsInJvbGUiOiJBZG1pbiIsImlhdCI6MTc1NjE3OTk2OCwiZXhwIjoxNzU2MjY2MzY4fQ.TtZTCYrK3BXOab8acc-AGJaMDnFmPgXOedVE7ZjV8gQ",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": "{{sakuSantriUrl}}/auth/profile"
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"token\" : \"591619\",\r\n    \"newPassword\" : \"qwertyuiop\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriUrl}}/auth/reset-password"
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\" : \"testing@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriUrl}}/auth/lupa-password"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Santri",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{sakuSantriUrl}}/santri"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Walsan",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{sakuSantriUrl}}/santri/walsan"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Tagihan",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{sakuSantriUrl}}/santri/tagihan/0098765439"
+					},
+					"response": []
+				},
+				{
+					"name": "Count Santri",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{sakuSantriVercel}}/santri/count"
+					},
+					"response": []
+				},
+				{
+					"name": "Total Saldo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{sakuSantriVercel}}/santri/total-saldo"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Saldo Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{sakuSantriUrl}}/santri/saldo/5"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Profile Santri By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{sakuSantriUrl}}/santri/profile/5"
+					},
+					"response": []
+				},
+				{
+					"name": "Total hutang",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{sakuSantriVercel}}/santri/hutang"
+					},
+					"response": []
+				},
+				{
+					"name": "Saldo Terbanyak",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{sakuSantriUrl}}/santri/saldo-max"
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"Test\",\r\n    \"kelas\" : \"12\",\r\n    \"jurusan\" : \"TKJ\",\r\n    \"nisn\" : \"51354454\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriVercel}}/santri/create"
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    // \"name\" : \"Tes\"\r\n    \"jurusan\" : \"TKJ\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriUrl}}/santri/update/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Santri n Kartu",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"santriData\" : {\r\n        \"name\" : \"Ets\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriUrl}}/santri/update-santri-kartu/18"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Bulk",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n{\r\n    \"name\" : \"Dapis\"\r\n},\r\n{\r\n    \"name\" : \"Fawwaz\"\r\n},\r\n{\r\n    \"name\" : \"Testing\"\r\n}\r\n]    ",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sakuSantriUrl}}/santri/update-bulk/?id=11,12,18",
+							"host": [
+								"{{sakuSantriUrl}}"
+							],
+							"path": [
+								"santri",
+								"update-bulk",
+								""
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "11,12,18"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{sakuSantriVercel}}/santri/delete/78"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Bulk",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{sakuSantriUrl}}/santri/delete-bulk/?id=38,39",
+							"host": [
+								"{{sakuSantriUrl}}"
+							],
+							"path": [
+								"santri",
+								"delete-bulk",
+								""
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "38,39"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Bulk Walsan",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{sakuSantriVercel}}/santri/delete-bulk-walsan/?id=50",
+							"host": [
+								"{{sakuSantriVercel}}"
+							],
+							"path": [
+								"santri",
+								"delete-bulk-walsan",
+								""
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "50"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Kategori",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{sakuSantriUrl}}/kategori"
+					},
+					"response": []
+				},
+				{
+					"name": "Get 1",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{sakuSantriUrl}}/kategori/2"
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nama\" : \"Minuman\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriUrl}}/kategori/create"
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"minuman\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriUrl}}/kategori/update/2"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{sakuSantriVercel}}/kategori/delete/3"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Items",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{sakuSantriVercel}}/items?kategori=minuman",
+							"host": [
+								"{{sakuSantriVercel}}"
+							],
+							"path": [
+								"items"
+							],
+							"query": [
+								{
+									"key": "kategori",
+									"value": "minuman"
+								},
+								{
+									"key": "barcode",
+									"value": "8996001600269",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Count Produk",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": "{{sakuSantriUrl}}/items"
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "nama",
+									"value": "Ale - Ale",
+									"type": "text"
+								},
+								{
+									"key": "harga",
+									"value": "1000",
+									"type": "text"
+								},
+								{
+									"key": "jumlah",
+									"value": "50",
+									"type": "text"
+								},
+								{
+									"key": "kategoriId",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "gambar",
+									"type": "file",
+									"src": "/C:/Users/radis/Downloads/ale.jpeg"
+								},
+								{
+									"key": "barcode",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "jumlahRestock",
+									"value": "24",
+									"type": "text"
+								}
+							]
+						},
+						"url": "{{sakuSantriUrl}}/items/create"
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "gambar",
+									"type": "file",
+									"src": "/C:/Users/radis/Downloads/beng2.png"
+								},
+								{
+									"key": "harga",
+									"value": "1000",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": "{{sakuSantriUrl}}/items/update/1"
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{sakuSantriUrl}}/items/delete/"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cart",
+			"item": [
+				{
+					"name": "Get",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{sakuSantriVercel}}/cart/2"
+					},
+					"response": []
+				},
+				{
+					"name": "Add cart",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"santriId\": 2,\r\n    \"itemId\": 8,\r\n    \"quantity\": 10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriVercel}}/cart"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "History + Checkout",
+			"item": [
+				{
+					"name": "Co",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"santriId\": 1,\r\n  \"items\": [\r\n    { \"itemId\": 1, \"quantity\": 2 },\r\n    { \"itemId\": 3, \"quantity\": 1 }\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriVercel}}/history/checkout"
+					},
+					"response": []
+				},
+				{
+					"name": "Co Hutang",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"santriId\": 5,\r\n  \"items\": [\r\n    { \"itemId\": 1, \"quantity\": 2 },\r\n    { \"itemId\": 8, \"quantity\": 1 }\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriVercel}}/history/hutang"
+					},
+					"response": []
+				},
+				{
+					"name": "Get History",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{sakuSantriVercel}}/history?sort=asc&status=Hutang",
+							"host": [
+								"{{sakuSantriVercel}}"
+							],
+							"path": [
+								"history"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "asc"
+								},
+								{
+									"key": "status",
+									"value": "Hutang"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Detail By Santri",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{sakuSantriUrl}}/history/santri/9"
+					},
+					"response": []
+				},
+				{
+					"name": "Count & Total Jajan Santri By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{sakuSantriUrl}}/history/total-jajan/9"
+					},
+					"response": []
+				},
+				{
+					"name": "Count & Total Hutang Santri By ID Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{sakuSantriUrl}}/history/total-hutang/9"
+					},
+					"response": []
+				},
+				{
+					"name": "Total Transaksi Santri By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{sakuSantriUrl}}/history/total-jajan/9"
+					},
+					"response": []
+				},
+				{
+					"name": "Count Transanski Santri By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{sakuSantriUrl}}/history/count-transaksi/9"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{sakuSantriUrl}}/history/6"
+					},
+					"response": []
+				},
+				{
+					"name": "Count",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{sakuSantriVercel}}/history/count"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transaksi",
+			"item": [
+				{
+					"name": "Top Up",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"jumlah\" : 10000000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriVercel}}/transaksi/top-up/79"
+					},
+					"response": []
+				},
+				{
+					"name": "Deduct",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"jumlah\" : 10000000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriUrl}}/transaksi/deduct/18"
+					},
+					"response": []
+				},
+				{
+					"name": "Ngutang",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"jumlah\" : 100000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriUrl}}/transaksi/hutang/18"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Midtrans",
+			"item": [
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"santriId\": 29,\r\n  \"grossAmount\": 100000\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriVercel}}/midtrans/create-transaction"
+					},
+					"response": []
+				},
+				{
+					"name": "Push Notif",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"transaction_time\": \"2025-09-23 14:36:36\",\r\n  \"transaction_status\": \"capture\",\r\n  \"transaction_id\": \"336ea3d3-cac0-43c2-8ee1-4ab07dfd170a\",\r\n  \"status_message\": \"midtrans payment notification\",\r\n  \"status_code\": \"200\",\r\n  \"signature_key\": \"762150348569b6cddc3eec6fd25ceb6e84dcb9b2cbef2170a3efe5e13cd0a4314bb2388a51a1e1a0a91321f3124971cb673339d965aab244c46a398e43c456f5\",\r\n  \"payment_type\": \"credit_card\",\r\n  \"order_id\": \"TOPUP-SANTRI-24-1758612982929\",\r\n  \"metadata\": {},\r\n  \"merchant_id\": \"G456638333\",\r\n  \"masked_card\": \"48111111-1114\",\r\n  \"gross_amount\": \"100000.00\",\r\n  \"fraud_status\": \"accept\",\r\n  \"expiry_time\": \"2025-10-01 14:36:36\",\r\n  \"currency\": \"IDR\",\r\n  \"channel_response_message\": \"Approved\",\r\n  \"channel_response_code\": \"00\",\r\n  \"card_type\": \"credit\",\r\n  \"bank\": \"cimb\",\r\n  \"approval_code\": \"1758612996700\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriUrl}}/midtrans/notification"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Kartu",
+			"item": [
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nomorKartu\" : \"3397176629\",\r\n    \"passcode\" : \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriVercel}}/kartu/create"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nomorKartu\" : \"12345670\",\r\n    \"passcode\" : \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriUrl}}/kartu/verify"
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"passcode\" : \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriUrl}}/kartu/19"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{sakuSantriVercel}}/kartu?noKartu=2801784601",
+							"host": [
+								"{{sakuSantriVercel}}"
+							],
+							"path": [
+								"kartu"
+							],
+							"query": [
+								{
+									"key": "noKartu",
+									"value": "2801784601"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{sakuSantriUrl}}/kartu/19"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Socket",
+			"item": []
+		},
+		{
+			"name": "Winpay",
+			"item": [
+				{
+					"name": "Create VA",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"customerNo\": \"1234567989\",\r\n  \"virtualAccountName\": \"CHUS PANDI\",\r\n  \"nisn\" : \"123456789020\",\r\n  \"bulan\" : [],\r\n  \"tahun\" : \"\", \r\n  \"jenis\" : \"uangsaku\",\r\n  \"totalAmount\": {\r\n    \"value\": \"10000.00\",\r\n    \"currency\": \"IDR\"\r\n  },\r\n  \"virtualAccountTrxType\": \"c\",\r\n  \"additionalInfo\": {\r\n    \"channel\": \"BSI\"\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriVercel}}/payments/winpay/va"
+					},
+					"response": [
+						{
+							"name": "Response Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"customerNo\": \"000003212\",\r\n  \"virtualAccountName\": \"Mas Nchus\",\r\n  \"trxId\": \"INV-000000023212x22\",\r\n  \"totalAmount\": {\r\n    \"value\": \"25000.00\",\r\n    \"currency\": \"IDR\"\r\n  },\r\n  \"virtualAccountTrxType\": \"c\",\r\n  \"additionalInfo\": {\r\n    \"channel\": \"BRI\"\r\n  }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{sakuSantriUrl}}/payments/winpay/va"
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "474"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1da-OwtITC6Tnl7GREeG1JH38HTEzp8\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 19 Nov 2025 04:39:35 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"responseCode\": \"2002700\",\n        \"responseMessage\": \"Success\",\n        \"virtualAccountData\": {\n            \"partnerServiceId\": \"    9042\",\n            \"customerNo\": \"08123456789\",\n            \"virtualAccountNo\": \"    904208123456789\",\n            \"virtualAccountName\": \"SMK MADINATULQURAN - CHUS PANDI\",\n            \"trxId\": \"INV-000000002\",\n            \"totalAmount\": {\n                \"value\": \"10000.00\",\n                \"currency\": \"IDR\"\n            },\n            \"virtualAccountTrxType\": \"c\",\n            \"expiredDate\": \"2025-11-20T21:22:10+07:00\",\n            \"additionalInfo\": {\n    \"channel\": \"BSI\",\n                \"contractId\": \"si09202a96-7b1b-4a07-8c42-f974978245e9\"\n            }\n        }\n    }\n}"
+						},
+						{
+							"name": "tes",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"customerNo\": \"08123456789\",\r\n  \"virtualAccountName\": \"CHUS PANDI\",\r\n  \"nisn\" : \"123456789\",\r\n  \"bulan\" : \"Januari\",\r\n  \"tahun\" : \"2025\",\r\n  \"jenis\" : \"SPP\",\r\n  \"totalAmount\": {\r\n    \"value\": \"10000.00\",\r\n    \"currency\": \"IDR\"\r\n  },\r\n  \"virtualAccountTrxType\": \"c\",\r\n  \"additionalInfo\": {\r\n    \"channel\": \"BSI\"\r\n  }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{sakuSantriUrl}}/payments/winpay/va"
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "474"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1da-nCT3JwM8vIFVHl2KraIUQu/jWJ0\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 24 Nov 2025 02:54:27 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"responseCode\": \"2002700\",\n        \"responseMessage\": \"Success\",\n        \"virtualAccountData\": {\n            \"partnerServiceId\": \"    9042\",\n            \"customerNo\": \"08123456789\",\n            \"virtualAccountNo\": \"    904208123456789\",\n            \"virtualAccountName\": \"SMK MADINATULQURAN - CHUS PANDI\",\n            \"trxId\": \"INV-952864959\",\n            \"totalAmount\": {\n                \"value\": \"10000.00\",\n                \"currency\": \"IDR\"\n            },\n            \"virtualAccountTrxType\": \"c\",\n            \"expiredDate\": \"2025-11-25T09:54:24+07:00\",\n            \"additionalInfo\": {\n                \"channel\": \"BSI\",\n                \"contractId\": \"si03f64aa5-3e4d-4866-95fc-1fcedd4c1969\"\n            }\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Inquiry VA",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"trxId\": \"INV-650197618\",\r\n    \"additionalInfo\": {\r\n        \"contractId\": \"si5f5cf4ca-298f-44cc-b5c3-8c815f559993\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriVercel}}/payments/winpay/va/inquiry"
+					},
+					"response": []
+				},
+				{
+					"name": "Inquiry Status",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"virtualAccountNo\": \"9042176465019921\",\r\n    \"additionalInfo\": {\r\n        \"channel\": \"BSI\",\r\n        \"contractId\": \"si5f5cf4ca-298f-44cc-b5c3-8c815f559993\",\r\n        \"trxId\": \"INV-650197618\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriVercel}}/payments/winpay/va/inquiry-status"
+					},
+					"response": []
+				},
+				{
+					"name": "Callback",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"partnerServiceId\": \"    9042\",\r\n    \"customerNo\": \"176466101052\",\r\n    \"virtualAccountNo\": \"    9042176466101052\",\r\n    \"virtualAccountName\": \"SMK MADINATULQURAN - CHUS PANDI\",\r\n    \"trxId\": \"INV-661010485\",\r\n    \"paidAmount\": {\r\n        \"value\": \"10000.00\",\r\n        \"currency\": \"IDR\"\r\n    },\r\n    \"virtualAccountTrxType\": \"c\",\r\n    \"expiredDate\": \"2025-12-04T14:36:50+07:00\",\r\n    \"additionalInfo\": {\r\n        \"channel\": \"BSI\",\r\n        \"contractId\": \"si7f9fa6e5-78a1-4a30-943a-42e13299306d\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{sakuSantriUrl}}/payments/winpay/callback"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "sakuSantriUrl",
+			"value": "http://localhost:5000"
+		},
+		{
+			"key": "sakuSantriVercel",
+			"value": "https://keuangan-santri-be.vercel.app/"
+		},
+		{
+			"key": "vercelTes",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
